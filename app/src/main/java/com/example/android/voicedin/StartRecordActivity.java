@@ -19,6 +19,10 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.example.android.voicedin.helper_classes.CustomLocationListener;
+import com.microsoft.cognitiveservices.speech.SpeechFactory;
+
+import static android.Manifest.permission.INTERNET;
+import static android.Manifest.permission.RECORD_AUDIO;
 
 public class StartRecordActivity extends AppCompatActivity {
 
@@ -51,6 +55,18 @@ public class StartRecordActivity extends AppCompatActivity {
             listener.setGpsView(gpsView);
             locationManager.requestLocationUpdates(provider.getName(), 100000, 10, listener);
         }
+
+        int requestCode = 5; // unique code for the permission request
+        ActivityCompat.requestPermissions(this, new String[]{RECORD_AUDIO, INTERNET}, requestCode);
+
+        try {
+            // Note: required once after app start.
+            SpeechFactory.configureNativePlatformBindingWithDefaultCertificate(this.getCacheDir().getAbsolutePath());
+        } catch (Exception ex) {
+            Log.e("SpeechSDKDemo", "unexpected " + ex.getMessage());
+        }
+
+
     }
 
 
