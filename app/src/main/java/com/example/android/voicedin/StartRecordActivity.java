@@ -14,14 +14,20 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class StartRecordActivity extends AppCompatActivity {
     private boolean isRecording = false;
-    MediaRecorder recorder;
-    String filePath = "recording.3gp";
-    int recordingNumber = 1;
     public static final int RequestPermissionCode = 1;
     boolean voiceCommandStart = false; //start recording with voice command
     boolean voiceCommandStop = false; //stop recording with voice command
     private final String[] startCommands = {"Hi", "Hello", "Hey"};
     private final String[] stopCommands = {"Bye", "Goodbye", "See you"};
+    //for PCM
+    private static final int RECORDER_SAMPLERATE = 8000;
+    private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
+    private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
+    private AudioRecord recorder = null;
+    private Thread recordingThread = null;
+    private final int bufferSize = AudioRecord.getMinBufferSize(RECORDER_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING);
+    private final int BufferElements2Rec = 1024; // want to play 2048 (2K) since 2 bytes we use only 1024
+    private final int BytesPerElement = 2; // 2 bytes in 16bit format
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,31 +65,82 @@ public class StartRecordActivity extends AppCompatActivity {
     }
 
     public void startStopRecording(View view) throws IOException, IllegalStateException {
-        Button recordingButton = (Button)view.findViewById(R.id.recordingButton);
         if(isRecording){ //if recording is started, stop recording
-            recorder.stop();
-            //recorder.release();
-            recordingNumber++;
-            ((EditText)findViewById(R.id.recordedTranscript)).setText("Woah it's a transcript"); //TODO: replace with method call to speech to text API
-            isRecording = false;
+            stopRecording(view);
         } else{ //if recording is stopped, start recording
-            ActivityCompat.requestPermissions(StartRecordActivity.this, new String[]{WRITE_EXTERNAL_STORAGE, RECORD_AUDIO}, RequestPermissionCode);
-            filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording" + recordingNumber + ".3gp";
-            prepareMediaRecorder();
-            recorder.prepare();
-            recorder.start();
-            recordingButton.setText("Stop Recording");
-            ((EditText)findViewById(R.id.recordedTranscript)).setText("");
-            isRecording = true;
+            startRecording(view);
         }
     }
 
-    public void prepareMediaRecorder() {
-        recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        recorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-        recorder.setOutputFile(filePath);
+    public void startRecording(View view) throws IOException, IllegalStateException {
+        ActivityCompat.requestPermissions(StartRecordActivity.this, new String[]{WRITE_EXTERNAL_STORAGE, RECORD_AUDIO}, RequestPermissionCode);
+        recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, BufferElements2Rec * BytesPerElement);
+        recorder.startRecording();
+        recordingThread = new Thread(new Runnable() {
+            public void run() {
+                writeAudioDataToFile();
+            }
+        }, "AudioRecorder Thread");
+        recordingThread.start();
+        ((Button)view.findViewById(R.id.recordingButton)).setText("Stop Recording");
+        ((EditText)findViewById(R.id.recordedTranscript)).setText("");
+        isRecording = true;
+    }
+
+    public void stopRecording(View view) throws IOException, IllegalStateException {
+        // stops the recording activity
+        if (null != recorder) {
+            isRecording = false;
+            recorder.stop();
+            recorder.release();
+            recorder = null;
+            recordingThread = null;
+        }
+        ((Button)view.findViewById(R.id.recordingButton)).setText("Start Recording");
+        ((EditText)findViewById(R.id.recordedTranscript)).setText("Woah it's a transcript"); //TODO: replace with method call to speech to text API
+        isRecording = false;
+    }
+
+    //Conversion of short to byte
+    public byte[] short2byte(short[] sData) {
+        int shortArrsize = sData.length;
+        byte[] bytes = new byte[shortArrsize * 2];
+
+        for (int i = 0; i < shortArrsize; i++) {
+            bytes[i * 2] = (byte) (sData[i] & 0x00FF);
+            bytes[(i * 2) + 1] = (byte) (sData[i] >> 8);
+            sData[i] = 0;
+        }
+        return bytes;
+    }
+
+    public void writeAudioDataToFile() {
+        // Write the output audio in byte
+        String filePath = "/sdcard/8k16bitMono.pcm";
+        short sData[] = new short[BufferElements2Rec];
+        FileOutputStream os = null;
+        try {
+            os = new FileOutputStream(filePath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        while (isRecording) {
+            // gets the voice output from microphone to byte format
+            recorder.read(sData, 0, BufferElements2Rec);
+            System.out.println("Short wirting to file" + sData.toString());
+            try {
+                // writes the data to file from buffer stores the voice buffer
+                byte bData[] = short2byte(sData);
+                os.write(bData, 0, BufferElements2Rec * BytesPerElement);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
