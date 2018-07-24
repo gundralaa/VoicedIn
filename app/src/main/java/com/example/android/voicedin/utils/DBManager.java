@@ -11,7 +11,7 @@ import java.util.UUID;
 public class DBManager {
 
     private ArrayList<String> userInfo;
-    SQLConnection sqlConnection = new SQLConnection("PLACEHOLDER");//todo: find{
+    SQLConnection sqlConnection = new SQLConnection();
     // config file name
 
     //creates unique UserId, should be called upon creating new account

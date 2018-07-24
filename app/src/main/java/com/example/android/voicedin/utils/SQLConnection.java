@@ -86,12 +86,9 @@ public class SQLConnection {
 
 
     //connect to SQL DB
-    public SQLConnection(String configFilename) {
-        this.configFilename = configFilename;
-    }
+    public SQLConnection() {}
 
     public void openConnection() throws Exception {
-        configProps.load(new FileInputStream(configFilename));
 
         jSQLDriver = "com.microsoft.sqlserver.jdbc.SWLServerDriver";
         jSQLUrl = "jdbc:sqlserver://hack-sqlserver.database.windows.net;database=hackathon-db";
