@@ -8,8 +8,7 @@ import android.os.AsyncTask;
 import android.widget.TextView;
 
 import com.example.android.voicedin.User;
-//import com.microsoft.cognitive.speakerrecognition.SpeakerIdentificationRestClient;
-//import com.microsoft.cognitive.speakerrecognition.contract.identification.CreateProfileResponse;
+
 import com.microsoft.cognitiveservices.speech.AudioInputStreamFormat;
 
 import java.io.IOException;
@@ -34,7 +33,7 @@ public class SpeakerRecognitionUtils {
     private class EnrollmentTask extends AsyncTask<User, Void, User>{
         @Override
         protected void onPreExecute() {
-            client = new com.microsoft.cognitive.speakerrecognition.SpeakerIdentificationRestClient(SUBSCRIPTION_KEY);
+            client = new SpeakerIdentificationRestClient(SUBSCRIPTION_KEY);
             super.onPreExecute();
         }
 
