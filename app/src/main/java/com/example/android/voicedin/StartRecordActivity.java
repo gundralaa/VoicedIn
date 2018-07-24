@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.android.voicedin.helper_classes.CustomLocationListener;
+import com.example.android.voicedin.utils.AudioRecordingUtils;
 import com.example.android.voicedin.utils.SpeechToTextUtils;
 import com.microsoft.cognitiveservices.speech.SpeechFactory;
 
@@ -43,17 +44,13 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 
 public class StartRecordActivity extends AppCompatActivity {
-    private boolean isRecording;
-    MediaRecorder recorder;
-    String filePath = "recording.3gp";
-    int recordingNumber = 1;
     public static final int RequestPermissionCode = 1;
 
     private static final String TAG = "StartRecordActivity" ;
     private static final int PERMISSION_REQUEST_CODE = 1;
     TextView gpsView;
     TextView speechView;
-    Button startButton;
+    Button recordingButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +63,7 @@ public class StartRecordActivity extends AppCompatActivity {
 
         gpsView = (TextView) findViewById(R.id.gps_view);
         speechView = (TextView) findViewById(R.id.speech_text_view);
-        startButton = (Button) findViewById(R.id.button_view);
+        recordingButton = (Button) findViewById(R.id.recordingButton);
 
         if (!gpsEnabled) {
             enableLocationSettings();
@@ -83,7 +80,7 @@ public class StartRecordActivity extends AppCompatActivity {
         }
 
         int requestCode = 5; // unique code for the permission request
-        ActivityCompat.requestPermissions(this, new String[]{RECORD_AUDIO, INTERNET}, requestCode);
+        ActivityCompat.requestPermissions(this, new String[]{RECORD_AUDIO, INTERNET, WRITE_EXTERNAL_STORAGE}, requestCode);
 
         try {
             // Note: required once after app start.
@@ -92,45 +89,30 @@ public class StartRecordActivity extends AppCompatActivity {
             Log.e("SpeechSDKDemo", "unexpected " + ex.getMessage());
         }
 
-        SpeechToTextUtils.setContext(this);
-        SpeechToTextUtils.setView(speechView);
-        SpeechToTextUtils.continuousSpeechCollect(startButton, this);
+        AudioRecordingUtils.setRecordingButton(recordingButton);
+        recordingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    if(AudioRecordingUtils.isIsRecording()){
+                        AudioRecordingUtils.stopRecording();
+                    } else {
+                        AudioRecordingUtils.startStopRecording();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        //SpeechToTextUtils.setContext(this);
+        //SpeechToTextUtils.setView(speechView);
+        //SpeechToTextUtils.continuousSpeechCollect(recordingButton, this);
     }
 
 
     private void enableLocationSettings() {
         Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         startActivity(settingsIntent);
-    }
-
-    public void startStopRecording(View view) throws IOException, IllegalStateException {
-        Button recordingButton = (Button)view.findViewById(R.id.recordingButton);
-        if(isRecording){ //if recording is started, stop recording
-            recorder.stop();
-            //recorder.release();
-            recordingNumber++;
-            recordingButton.setText("Start Recording");
-            ((EditText)findViewById(R.id.recordedTranscript)).setText("Woah it's a transcript"); //TODO: replace with method call to speech to text API
-            isRecording = false;
-        } else{ //if recording is stopped, start recording
-            ActivityCompat.requestPermissions(StartRecordActivity.this, new String[]{WRITE_EXTERNAL_STORAGE, RECORD_AUDIO}, RequestPermissionCode);
-            filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording" + recordingNumber + ".3gp";
-            prepareMediaRecorder();
-            recorder.prepare();
-            recorder.start();
-            recordingButton.setText("Stop Recording");
-            ((EditText)findViewById(R.id.recordedTranscript)).setText("");
-            isRecording = true;
-        }
-    }
-
-    public void prepareMediaRecorder() {
-        recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        recorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-        recorder.setOutputFile(filePath);
-
     }
 
     @Override
