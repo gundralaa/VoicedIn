@@ -112,6 +112,7 @@ public class SentimentAnalysisResult {
                     System.out.println(je.getMessage());
                 }
 
+                SearchComplete = true;
                 Response = response.toString();
             } catch (UnsupportedEncodingException uee) {
                 System.out.println(uee.getMessage());
