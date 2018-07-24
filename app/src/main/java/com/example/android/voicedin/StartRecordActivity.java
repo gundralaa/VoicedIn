@@ -1,5 +1,7 @@
 package com.example.android.voicedin;
 
+import android.content.pm.PackageManager;
+import android.media.MediaRecorder;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -21,19 +23,34 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.android.voicedin.helper_classes.CustomLocationListener;
+import com.example.android.voicedin.utils.AudioRecordingUtils;
 import com.example.android.voicedin.utils.SpeechToTextUtils;
 import com.microsoft.cognitiveservices.speech.SpeechFactory;
 
 import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.RECORD_AUDIO;
 
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.os.*;
+import android.view.*;
+import android.widget.*;
+import java.io.*;
+import android.media.*;
+import static android.Manifest.permission.RECORD_AUDIO;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
+
 public class StartRecordActivity extends AppCompatActivity {
+    public static final int RequestPermissionCode = 1;
 
     private static final String TAG = "StartRecordActivity" ;
     private static final int PERMISSION_REQUEST_CODE = 1;
     TextView gpsView;
     TextView speechView;
-    Button startButton;
+    Button recordingButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +63,7 @@ public class StartRecordActivity extends AppCompatActivity {
 
         gpsView = (TextView) findViewById(R.id.gps_view);
         speechView = (TextView) findViewById(R.id.speech_text_view);
-        startButton = (Button) findViewById(R.id.button_view);
+        recordingButton = (Button) findViewById(R.id.recordingButton);
 
         if (!gpsEnabled) {
             enableLocationSettings();
@@ -63,7 +80,7 @@ public class StartRecordActivity extends AppCompatActivity {
         }
 
         int requestCode = 5; // unique code for the permission request
-        ActivityCompat.requestPermissions(this, new String[]{RECORD_AUDIO, INTERNET}, requestCode);
+        ActivityCompat.requestPermissions(this, new String[]{RECORD_AUDIO, INTERNET, WRITE_EXTERNAL_STORAGE}, requestCode);
 
         try {
             // Note: required once after app start.
@@ -72,14 +89,47 @@ public class StartRecordActivity extends AppCompatActivity {
             Log.e("SpeechSDKDemo", "unexpected " + ex.getMessage());
         }
 
-        SpeechToTextUtils.setContext(this);
-        SpeechToTextUtils.setView(speechView);
-        SpeechToTextUtils.continuousSpeechCollect(startButton, this);
+        AudioRecordingUtils.setRecordingButton(recordingButton);
+        recordingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    if(AudioRecordingUtils.isIsRecording()){
+                        AudioRecordingUtils.stopRecording();
+                    } else {
+                        AudioRecordingUtils.startStopRecording();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        //SpeechToTextUtils.setContext(this);
+        //SpeechToTextUtils.setView(speechView);
+        //SpeechToTextUtils.continuousSpeechCollect(recordingButton, this);
     }
 
 
     private void enableLocationSettings() {
         Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         startActivity(settingsIntent);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case RequestPermissionCode:
+                if (grantResults.length > 0) {
+                    boolean StoragePermission = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    boolean RecordPermission = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+
+                    if (StoragePermission && RecordPermission) {
+                        Toast.makeText(StartRecordActivity.this, "Permission Granted", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(StartRecordActivity.this,"Permission Denied",Toast.LENGTH_LONG).show();
+                    }
+                }
+                break;
+        }
     }
 }

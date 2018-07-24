@@ -1,15 +1,17 @@
 package com.example.android.voicedin;
 
+import java.util.UUID;
+
 public class User {
     private String name = "";
     private String linkedInURL = "";
     int userID = 0;
-    int voiceID = 0;
+    UUID voiceID;
     double latitude = 0;
     double longitude = 0;
 
     //constructor
-    public User(String name, String linkedInURL, int userID, int voiceID, Location location){
+    public User(String name, String linkedInURL, int userID, UUID voiceID, Location location){
         this.name = name;
         this.linkedInURL = linkedInURL;
         this.userID = userID;
@@ -28,7 +30,7 @@ public class User {
     public int getUserID(){
         return userID;
     }
-    public int getVoiceID(){
+    public UUID getVoiceID(){
         return voiceID;
     }
     public Location getLocation(){ //shortcut to get location with single method
@@ -51,7 +53,7 @@ public class User {
     public void setUserID(int userID){
         this.userID = userID;
     }
-    public void setVoiceID(int voiceID) {
+    public void setVoiceID(UUID voiceID) {
         this.voiceID = voiceID;
     }
     public void setLocation(Location location){ //shortcut to set location with single method

@@ -44,6 +44,47 @@ public class SpeechToTextUtils {
 
     }
 
+
+
+    public static void speechWithFile(String audioFile){
+        try {
+            factory = SpeechFactory.fromSubscription(speechSubscriptionKey, serviceRegion);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        SpeechRecognizer reco = null;
+        ArrayList<String> content = new ArrayList<>();
+
+
+        clearTextBox();
+
+        try {
+            content.clear();
+            reco = factory.createSpeechRecognizerWithFileInput(audioFile);
+
+            reco.IntermediateResultReceived.addEventListener(((o, speechRecognitionResultEventArgs) -> {
+                final String s = speechRecognitionResultEventArgs.getResult().getText();
+                content.add(s);
+                setRecognizedText(TextUtils.join(" ", content));
+                content.remove(content.size() - 1);
+            }));
+
+            reco.FinalResultReceived.addEventListener((o, speechRecognitionResultEventArgs) -> {
+                final String s = speechRecognitionResultEventArgs.getResult().getText();
+                content.add(s);
+                setRecognizedText(TextUtils.join(" ", content));
+            });
+
+            final Future<Void> task = reco.startContinuousRecognitionAsync();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
     private static MicrophoneStream microphoneStream;
     private static SpeechFactory factory = null;
     private static Activity context;
@@ -112,6 +153,7 @@ public class SpeechToTextUtils {
                     });
 
                     final Future<Void> task = reco.startContinuousRecognitionAsync();
+                    continuousListeningStarted = true;
 
                 } catch (Exception e){
                     e.printStackTrace();

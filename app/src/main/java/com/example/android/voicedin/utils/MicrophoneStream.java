@@ -8,6 +8,8 @@ import android.provider.MediaStore;
 import com.microsoft.cognitiveservices.speech.AudioInputStream;
 import com.microsoft.cognitiveservices.speech.AudioInputStreamFormat;
 
+import java.io.InputStream;
+
 /**
  * Created by abhin on 7/23/2018.
  */
