@@ -13,16 +13,49 @@ import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class StartRecordActivity extends AppCompatActivity {
-    private boolean isRecording;
+    private boolean isRecording = false;
     MediaRecorder recorder;
     String filePath = "recording.3gp";
     int recordingNumber = 1;
     public static final int RequestPermissionCode = 1;
+    boolean voiceCommandStart = false; //start recording with voice command
+    boolean voiceCommandStop = false; //stop recording with voice command
+    private final String[] startCommands = {"Hi", "Hello", "Hey"};
+    private final String[] stopCommands = {"Bye", "Goodbye", "See you"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_record);
+    }
+
+    public void checkVoiceCommands(String transcript) { //TODO: figure out cases for containng both start and stop commands in increment
+        if(containsStartCommand(transcript)) { //if transcript contains a start command, start recording
+            voiceCommandStart = true;
+        } else {
+            voiceCommandStart = false;
+        }
+        if(containsStopCommand(transcript)){ //if transcript contains a stop command, stop recording
+            voiceCommandStop = true;
+        } else {
+            voiceCommandStop = false;
+        }
+    }
+
+    public boolean containsStartCommand(String transcript) {
+        for(String startCommand : startCommands) {
+            if(transcript.contains(startCommand))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean containsStopCommand(String transcript) {
+        for(String stopCommand : stopCommands) {
+            if(transcript.contains(stopCommand))
+                return true;
+        }
+        return false;
     }
 
     public void startStopRecording(View view) throws IOException, IllegalStateException {
@@ -31,7 +64,6 @@ public class StartRecordActivity extends AppCompatActivity {
             recorder.stop();
             //recorder.release();
             recordingNumber++;
-            recordingButton.setText("Start Recording");
             ((EditText)findViewById(R.id.recordedTranscript)).setText("Woah it's a transcript"); //TODO: replace with method call to speech to text API
             isRecording = false;
         } else{ //if recording is stopped, start recording
@@ -52,7 +84,6 @@ public class StartRecordActivity extends AppCompatActivity {
         recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         recorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
         recorder.setOutputFile(filePath);
-
     }
 
     @Override
