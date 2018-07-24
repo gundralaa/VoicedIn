@@ -5,15 +5,22 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.example.android.voicedin.User;
 
+import com.microsoft.cognitive.speakerrecognition.SpeakerIdentificationRestClient;
+import com.microsoft.cognitive.speakerrecognition.contract.identification.CreateProfileResponse;
 import com.microsoft.cognitiveservices.speech.AudioInputStreamFormat;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
+
+import static android.content.ContentValues.TAG;
+import static java.lang.System.in;
 
 /**
  * Created by abhin on 7/24/2018.
@@ -22,15 +29,20 @@ import java.util.UUID;
 public class SpeakerRecognitionUtils {
 
 
-    private final static String SUBSCRIPTION_KEY = "";
+    private final static String SUBSCRIPTION_KEY = "9c497683c5cf4c4b872058baae39564e";
     private final static String LOCALE = "en-US";
     private static SpeakerIdentificationRestClient client = null;
     private static Activity context;
     private static TextView view;
     private final static int SAMPLE_RATE = 16000;
     private AudioRecord recorder;
+    private static User userIn = null;
 
-    private class EnrollmentTask extends AsyncTask<User, Void, User>{
+    public static void setView(TextView view) {
+        SpeakerRecognitionUtils.view = view;
+    }
+
+    public static class EnrollmentTask extends AsyncTask<User, Void, User>{
         @Override
         protected void onPreExecute() {
             client = new SpeakerIdentificationRestClient(SUBSCRIPTION_KEY);
@@ -52,25 +64,33 @@ public class SpeakerRecognitionUtils {
         @Override
         protected void onPostExecute(User user) {
             super.onPostExecute(user);
+            view.setText(user.getVoiceID().toString());
+            Log.d(TAG, user.getVoiceID() + "");
+            userIn = user;
         }
     }
 
-    private class AudioEnrollmentTask extends AsyncTask<User, Void, Void>{
+    public static class AudioEnrollmentTask extends AsyncTask<String, Void, User>{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
         }
 
         @Override
-        protected Void doInBackground(User... users) {
-            UUID voiceId = users[0].getVoiceID();
-            //client.enroll(stream, voiceId)
-            return null;
+        protected User doInBackground(String... strings) {
+            UUID voiceId = userIn.getVoiceID();
+            try{
+                FileInputStream in = new FileInputStream(strings[0]);
+                client.enroll(in, voiceId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return userIn;
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(User user) {
+            super.onPostExecute(user);
         }
     }
 

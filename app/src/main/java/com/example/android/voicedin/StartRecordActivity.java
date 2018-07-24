@@ -1,5 +1,6 @@
 package com.example.android.voicedin;
 
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.Manifest;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 
 import com.example.android.voicedin.helper_classes.CustomLocationListener;
 import com.example.android.voicedin.utils.AudioRecordingUtils;
+import com.example.android.voicedin.utils.SpeakerRecognitionUtils;
 import com.example.android.voicedin.utils.SpeechToTextUtils;
 import com.microsoft.cognitiveservices.speech.SpeechFactory;
 
@@ -51,6 +53,7 @@ public class StartRecordActivity extends AppCompatActivity {
     TextView gpsView;
     TextView speechView;
     Button recordingButton;
+    Activity context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +84,7 @@ public class StartRecordActivity extends AppCompatActivity {
         }
         */
 
+
         int requestCode = 5; // unique code for the permission request
         ActivityCompat.requestPermissions(this, new String[]{RECORD_AUDIO, INTERNET, WRITE_EXTERNAL_STORAGE}, requestCode);
 
@@ -90,25 +94,11 @@ public class StartRecordActivity extends AppCompatActivity {
         } catch (Exception ex) {
             Log.e("SpeechSDKDemo", "unexpected " + ex.getMessage());
         }
-
+        SpeechToTextUtils.setContext(this);
+        SpeechToTextUtils.setView(speechView);
         AudioRecordingUtils.setRecordingButton(recordingButton);
-        recordingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    if(AudioRecordingUtils.isIsRecording()){
-                        AudioRecordingUtils.stopRecording();
-                    } else {
-                        AudioRecordingUtils.startStopRecording();
-                    }
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        });
-        //SpeechToTextUtils.setContext(this);
-        //SpeechToTextUtils.setView(speechView);
-        //SpeechToTextUtils.continuousSpeechCollect(recordingButton, this);
+        User user = new User("John","hi",1,null);
+        SpeechToTextUtils.continuousSpeechCollect(recordingButton, this);
     }
 
 
@@ -134,4 +124,6 @@ public class StartRecordActivity extends AppCompatActivity {
                 break;
         }
     }
+
+    public void runEnrollmentTask(User user){new SpeakerRecognitionUtils.EnrollmentTask().execute(user);}
 }

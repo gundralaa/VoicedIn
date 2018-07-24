@@ -3,6 +3,7 @@ package com.example.android.voicedin;
 import java.util.*;
 
 public class NearbyUsersCalculator {
+    /*
     private ArrayList<User> nearbyUsers = new ArrayList<>();
     private final double proximityThreshold = 5;
     private final double earthRadius = 6371000; //in meters
@@ -27,4 +28,6 @@ public class NearbyUsersCalculator {
         distance = (double)(earthRadius * c);
         return distance;
     }
+    */
+
 }

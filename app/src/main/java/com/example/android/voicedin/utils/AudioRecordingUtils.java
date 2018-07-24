@@ -5,6 +5,7 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
+import android.view.View;
 import android.widget.Button;
 
 import com.example.android.voicedin.StartRecordActivity;
@@ -23,104 +24,100 @@ import static com.example.android.voicedin.StartRecordActivity.RequestPermission
 
 public class AudioRecordingUtils {
     private static boolean isRecording = false;
-    private static MediaRecorder recorder;
+    //private static MediaRecorder recorder;
     private static String filePath = "recording.3gp";
     private static int recordingNumber = 1;
     private static Button recordingButton;
-    private final static int SAMPLE_RATE = 16000;
-    private static AudioRecord record;
+    private final static int SAMPLE_RATE = 8000;
+
+    private static final int RECORDER_SAMPLERATE = 8000;
+    private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
+    private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
+    private static AudioRecord recorder = null;
     private static Thread recordingThread = null;
+    private final int bufferSize = AudioRecord.getMinBufferSize(RECORDER_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING);
+    private static final int BufferElements2Rec = 1024; // want to play 2048 (2K) since 2 bytes we use only 1024
+    private static final int BytesPerElement = 2; // 2 bytes in 16bit format
 
     public static void setRecordingButton(Button recordingButton) {
         AudioRecordingUtils.recordingButton = recordingButton;
+    }
+
+    public static String getFilePath() {
+        return filePath;
     }
 
     public static boolean isIsRecording() {
         return isRecording;
     }
 
-    public static void startStopRecording() throws IOException, IllegalStateException {
-        if(isRecording){ //if recording is started, stop recording
-            recorder.stop();
-            //recorder.release();
-            recordingNumber++;
-            recordingButton.setText("Start Recording");
-            isRecording = false;
-            SpeechToTextUtils.speechWithFile(filePath);
-        } else{ //if recording is stopped, start recording
-            filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording" + recordingNumber + ".3gp";
-            prepareMediaRecorder();
-            recorder.prepare();
-            recorder.start();
-            recordingButton.setText("Stop Recording");
-            isRecording = true;
-        }
-    }
 
-    private static void prepareMediaRecorder() {
-        recorder = new MediaRecorder();
-        recorder.setAudioChannels(1);
-        recorder.setAudioSamplingRate(16000);
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        recorder.setOutputFile(filePath);
-    }
+    public static void startRecording() throws IOException, IllegalStateException {
 
-    private static int initMic(){
-        AudioFormat af = new AudioFormat.Builder()
-                .setSampleRate(SAMPLE_RATE)
-                .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
-                .build();
-
-        record = new AudioRecord.Builder()
-                .setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION)
-                .setAudioFormat(af)
-                .build();
-        return AudioRecord.getMinBufferSize(af.getSampleRate(), af.getChannelMask(), af.getEncoding());
-    }
-
-    public static void startRecording(){
-        int bufferSize = initMic();
-        byte Data[] = new byte[bufferSize];
-        record.startRecording();
-        isRecording = true;
+        recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, BufferElements2Rec * BytesPerElement);
+        recorder.startRecording();
         recordingThread = new Thread(new Runnable() {
-            @Override
             public void run() {
-                filePath = Environment.getExternalStorageDirectory().getPath();
-                FileOutputStream os = null;
-                try {
-                    os = new FileOutputStream(filePath + " /record" + recordingNumber +".pcm");
-                } catch (FileNotFoundException e){
-                    e.printStackTrace();
-                }
-                while (isRecording){
-                    record.read(Data, 0, Data.length);
-                    try {
-                        os.write(Data, 0, bufferSize);
-                    } catch (IOException e){
-                        e.printStackTrace();
-                    }
-                    try {
-                        os.close();
-                    } catch (IOException e){
-                        e.printStackTrace();
-                    }
-                }
+                writeAudioDataToFile();
             }
-        }, "Audio Recorder Thread");
+        }, "AudioRecorder Thread");
         recordingThread.start();
+        isRecording = true;
     }
 
-    public static void stopRecording(){
-        if(null != record){
-            isRecording = false;
-            record.stop();
-            record.release();
-            record = null;
+    public static void stopRecording() throws IOException, IllegalStateException {
+        // stops the recording activity
+        if (null != recorder) {
+            recorder.stop();
+            recorder.release();
+            recorder = null;
             recordingThread = null;
+            isRecording = false;
+        }
+        isRecording = false;
+        recordingNumber++;
+        recordingButton.setOnClickListener(null);
+    }
+
+    //Conversion of short to byte
+    private static byte[] short2byte(short[] sData) {
+        int shortArrsize = sData.length;
+        byte[] bytes = new byte[shortArrsize * 2];
+
+        for (int i = 0; i < shortArrsize; i++) {
+            bytes[i * 2] = (byte) (sData[i] & 0x00FF);
+            bytes[(i * 2) + 1] = (byte) (sData[i] >> 8);
+            sData[i] = 0;
+        }
+        return bytes;
+    }
+
+    private static void writeAudioDataToFile() {
+        // Write the output audio in byte
+        filePath = Environment.getExternalStorageDirectory().getPath() + "/record" + recordingNumber + ".pcm" ;
+        short sData[] = new short[BufferElements2Rec];
+        FileOutputStream os = null;
+        try {
+            os = new FileOutputStream(filePath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        while (isRecording) {
+            // gets the voice output from microphone to byte format
+            recorder.read(sData, 0, BufferElements2Rec);
+            System.out.println("Short wirting to file" + sData.toString());
+            try {
+                // writes the data to file from buffer stores the voice buffer
+                byte bData[] = short2byte(sData);
+                os.write(bData, 0, BufferElements2Rec * BytesPerElement);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
