@@ -16,9 +16,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.android.voicedin.helper_classes.CustomLocationListener;
+import com.example.android.voicedin.utils.SpeechToTextUtils;
 import com.microsoft.cognitiveservices.speech.SpeechFactory;
 
 import static android.Manifest.permission.INTERNET;
@@ -29,8 +32,9 @@ public class StartRecordActivity extends AppCompatActivity {
     private static final String TAG = "StartRecordActivity" ;
     private static final int PERMISSION_REQUEST_CODE = 1;
     TextView gpsView;
+    TextView speechView;
+    Button startButton;
 
-    @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +45,8 @@ public class StartRecordActivity extends AppCompatActivity {
         final boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         gpsView = (TextView) findViewById(R.id.gps_view);
+        speechView = (TextView) findViewById(R.id.speech_text_view);
+        startButton = (Button) findViewById(R.id.button_view);
 
         if (!gpsEnabled) {
             enableLocationSettings();
@@ -66,9 +72,10 @@ public class StartRecordActivity extends AppCompatActivity {
             Log.e("SpeechSDKDemo", "unexpected " + ex.getMessage());
         }
 
-
+        SpeechToTextUtils.setContext(this);
+        SpeechToTextUtils.setView(speechView);
+        SpeechToTextUtils.continuousSpeechCollect(startButton, this);
     }
-
 
 
     private void enableLocationSettings() {
