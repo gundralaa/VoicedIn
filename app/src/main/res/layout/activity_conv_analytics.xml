@@ -6,4 +6,63 @@
     android:layout_height="match_parent"
     tools:context="com.example.android.voicedin.ConvAnalyticsActivity">
 
+    <TextView
+        android:id="@+id/SentimentLabel_TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Sentiment :"
+        app:layout_constraintEnd_toStartOf="@+id/SentimentScore_TextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias=".5"
+        app:layout_constraintVertical_bias=".5"
+        tools:layout_editor_absoluteY="445dp" />
+
+    <Button
+        android:id="@+id/AnalyzeTextSentiment_Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Analyze Text Sentiment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias=".8"
+        tools:layout_editor_absoluteY="341dp" />
+
+    <EditText
+        android:id="@+id/TextInput_EditText"
+        android:layout_width="355dp"
+        android:layout_height="281dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:inputType="textLongMessage"
+        app:layout_constraintBottom_toTopOf="@+id/AnalyzeTextSentiment_Button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/SentimentScore_TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="18dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/AnalyzeTextSentiment_Button"
+        app:layout_constraintVertical_bias="0.545" />
 </android.support.constraint.ConstraintLayout>
