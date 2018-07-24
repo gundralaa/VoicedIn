@@ -64,13 +64,14 @@ public class StartRecordActivity extends AppCompatActivity {
         gpsView = (TextView) findViewById(R.id.gps_view);
         speechView = (TextView) findViewById(R.id.speech_text_view);
         recordingButton = (Button) findViewById(R.id.recordingButton);
+        /*
+        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
         if (!gpsEnabled) {
             enableLocationSettings();
         } else {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "System Permissions not Present");
-                String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
                 requestPermissions(permissions, PERMISSION_REQUEST_CODE);
             }
             LocationProvider provider = locationManager.getProvider(LocationManager.GPS_PROVIDER);
@@ -78,6 +79,7 @@ public class StartRecordActivity extends AppCompatActivity {
             listener.setGpsView(gpsView);
             locationManager.requestLocationUpdates(provider.getName(), 100000, 10, listener);
         }
+        */
 
         int requestCode = 5; // unique code for the permission request
         ActivityCompat.requestPermissions(this, new String[]{RECORD_AUDIO, INTERNET, WRITE_EXTERNAL_STORAGE}, requestCode);

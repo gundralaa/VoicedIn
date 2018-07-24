@@ -21,7 +21,7 @@ import java.util.UUID;
  */
 
 public class SpeakerRecognitionUtils {
-    /*
+
 
     private final static String SUBSCRIPTION_KEY = "";
     private final static String LOCALE = "en-US";
@@ -34,7 +34,7 @@ public class SpeakerRecognitionUtils {
     private class EnrollmentTask extends AsyncTask<User, Void, User>{
         @Override
         protected void onPreExecute() {
-            client = new SpeakerIdentificationRestClient(SUBSCRIPTION_KEY);
+            client = new com.microsoft.cognitive.speakerrecognition.SpeakerIdentificationRestClient(SUBSCRIPTION_KEY);
             super.onPreExecute();
         }
 
@@ -74,7 +74,8 @@ public class SpeakerRecognitionUtils {
             super.onPostExecute(aVoid);
         }
     }
-    */
+
+
 
 
 
