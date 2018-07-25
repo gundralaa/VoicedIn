@@ -21,6 +21,8 @@ import org.json.JSONObject;
 public class VoiceActivity extends AppCompatActivity {
 
     String userURL;
+    String firstName;
+    String lastName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +80,10 @@ public class VoiceActivity extends AppCompatActivity {
             public void onApiSuccess(ApiResponse apiResponse){
                 Log.v("Fetch Info","apiResponse:"+apiResponse);
                 try {
-                    userURL = new JSONObject(apiResponse.getResponseDataAsString()).getString("publicProfileUrl");
+                    JSONObject json = new JSONObject(apiResponse.getResponseDataAsString());
+                    userURL = json.getString("publicProfileUrl");
+                    firstName = json.getString("firstName");
+                    lastName = json.getString("lastName");
                     Log.v("LinkedIn link", "userURL"+userURL);
                 }
                 catch (Exception ex)
