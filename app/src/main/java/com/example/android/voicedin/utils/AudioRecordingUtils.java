@@ -140,7 +140,7 @@ public class AudioRecordingUtils {
 
     public static void stopRecordingMP3() {
         record.stop();
-        //recorder.release();
+        record.release();
         //recordingNumber++;
         isRecording = false;
     }
@@ -157,5 +157,6 @@ public class AudioRecordingUtils {
 
     public static void setFilePathWAV() {
         filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording" + recordingNumber + ".wav";
+        recordingNumber++;
     }
 }

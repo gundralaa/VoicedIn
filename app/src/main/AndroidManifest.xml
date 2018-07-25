@@ -16,9 +16,9 @@
         android:theme="@style/AppTheme">
         <activity android:name=".SignInActivity">
         </activity>
-        <activity android:name=".VoiceActivity" >
+        <activity android:name=".VoiceActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".StartRecordActivity" >
+        <activity android:name=".StartRecordActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

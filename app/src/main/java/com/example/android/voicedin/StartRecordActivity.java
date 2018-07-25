@@ -41,6 +41,13 @@ import android.view.*;
 import android.widget.*;
 import java.io.*;
 import android.media.*;
+
+import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
+import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
+import cafe.adriel.androidaudioconverter.callback.ILoadCallback;
+import cafe.adriel.androidaudioconverter.model.*;
+import cafe.adriel.androidaudioconverter.model.AudioFormat;
+
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
@@ -53,7 +60,8 @@ public class StartRecordActivity extends AppCompatActivity {
     TextView gpsView;
     TextView speechView;
     Button recordingButton;
-    Activity context = this;
+    TextView nameView;
+    StartRecordActivity context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +75,20 @@ public class StartRecordActivity extends AppCompatActivity {
         gpsView = (TextView) findViewById(R.id.gps_view);
         speechView = (TextView) findViewById(R.id.speech_text_view);
         recordingButton = (Button) findViewById(R.id.recordingButton);
+        nameView = (TextView) findViewById(R.id.textView2);
+
+        SpeakerRecognitionUtils.initializeUsers();
+
+        AndroidAudioConverter.load(this, new ILoadCallback() {
+            @Override
+            public void onSuccess() {
+                // Great!
+            }
+            @Override
+            public void onFailure(Exception error) {
+                // FFmpeg is not supported by device
+            }
+        });
 
         /*
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
@@ -97,9 +119,33 @@ public class StartRecordActivity extends AppCompatActivity {
         }
         SpeechToTextUtils.setContext(this);
         SpeechToTextUtils.setView(speechView);
+        SpeakerRecognitionUtils.setNameView(nameView);
         //AudioRecordingUtils.setRecordingButton(recordingButton);
         User user = new User("John","hi",1,null);
-        SpeechToTextUtils.continuousSpeechCollect(recordingButton, this);
+
+        recordingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    AudioRecordingUtils.startRecordingMP3();
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        AudioRecordingUtils.stopRecordingMP3();
+                        convertToWave();
+
+                        SpeechToTextUtils.continuousSpeechCollect(recordingButton, context);
+                    }
+                }, 10000);
+
+
+            }
+        });
+
     }
 
 
@@ -127,4 +173,30 @@ public class StartRecordActivity extends AppCompatActivity {
     }
 
     public void runEnrollmentTask(User user){new SpeakerRecognitionUtils.EnrollmentTask().execute(user);}
+
+    private void convertToWave(){
+        File audioFile = new File(AudioRecordingUtils.getFilePath());
+        IConvertCallback callback = new IConvertCallback() {
+            @Override
+            public void onSuccess(File convertedFile) {
+                // So fast? Love it!
+                AudioRecordingUtils.setFilePathWAV();
+                SpeakerRecognitionUtils.runRecognitionTask(AudioRecordingUtils.getFilePath());
+            }
+            @Override
+            public void onFailure(Exception error) {
+                // Oops! Something went wrong
+                error.printStackTrace();
+            }
+        };
+        AndroidAudioConverter.with(this)
+                // Your current audio file
+                .setFile(audioFile)
+                // Your desired audio format
+                .setFormat(AudioFormat.WAV)
+                // An callback to know when conversion is finished
+                .setCallback(callback)
+                // Start conversion
+                .convert();
+    }
 }

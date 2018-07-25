@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.android.voicedin.StartRecordActivity;
 import com.microsoft.cognitiveservices.speech.RecognitionStatus;
 import com.microsoft.cognitiveservices.speech.SpeechFactory;
 import com.microsoft.cognitiveservices.speech.SpeechRecognitionResult;
@@ -108,7 +109,7 @@ public class SpeechToTextUtils {
         return microphoneStream;
     }
 
-    public static void continuousSpeechCollect(Button bt, Activity activity){
+    public static void continuousSpeechCollect(Button bt, StartRecordActivity activity){
         try {
             factory = SpeechFactory.fromSubscription(speechSubscriptionKey, serviceRegion);
         } catch (Exception e){
@@ -153,6 +154,7 @@ public class SpeechToTextUtils {
                     });
 
                     final Future<Void> task = reco.startContinuousRecognitionAsync();
+
                     continuousListeningStarted = true;
 
                 } catch (Exception e){
@@ -161,6 +163,8 @@ public class SpeechToTextUtils {
 
             }
         });
+
+        bt.performClick();
     }
 
     
