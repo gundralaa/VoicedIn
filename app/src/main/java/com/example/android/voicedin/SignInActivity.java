@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.example.android.voicedin.utils.SpeakerRecognitionUtils;
+
 public class SignInActivity extends AppCompatActivity {
 
     ImageView view;
@@ -18,7 +20,7 @@ public class SignInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in);
 
         view = (ImageView) findViewById(R.id.introimage);
-
+        //SpeakerRecognitionUtils.executeCleanTask();
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

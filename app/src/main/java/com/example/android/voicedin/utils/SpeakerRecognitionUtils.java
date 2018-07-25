@@ -7,6 +7,7 @@ import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.example.android.voicedin.EndActivity;
@@ -18,6 +19,7 @@ import com.example.android.voicedin.FireBaseUser;
 import com.example.android.voicedin.Location;
 import com.example.android.voicedin.User;
 
+import com.example.android.voicedin.VoiceActivity;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -54,6 +56,10 @@ public class SpeakerRecognitionUtils {
     private final static int SAMPLE_RATE = 16000;
     private AudioRecord recorder;
     public static User userIn = null;
+
+    public static void setContext(Activity context) {
+        SpeakerRecognitionUtils.context = context;
+    }
 
     //private static ArrayList<User> users = new ArrayList<>();
     private static ArrayList<FireBaseUser> users = new ArrayList<>();
@@ -163,8 +169,40 @@ public class SpeakerRecognitionUtils {
             user.setId(userId);
             user.setName(name);
             user.setLinkedinUrl(linkedInURL);
+            if(userId != null && linkedInURL != null){
+                if(userId.trim().length() != 0 && linkedInURL.trim().length() != 0){
+                    databaseReference.child("users").child(userId).setValue(user);
+                }
+            } else {
+                Toast.makeText(context, "Could not Store LinkedIn Info in Database: Invalid Format", Toast.LENGTH_SHORT).show();
+            }
 
-            databaseReference.child("users").child("uid").setValue(user);
+
+
+        }
+    }
+
+    public static void executeCleanTask(){new CleanTask().execute();}
+    private static class CleanTask extends AsyncTask<Void, Void, Void>{
+        @Override
+        protected void onPreExecute() {
+            client = new SpeakerIdentificationRestClient(SUBSCRIPTION_KEY);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                client.getProfiles();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
         }
     }
 

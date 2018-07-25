@@ -100,9 +100,7 @@ public class VoiceActivity extends AppCompatActivity {
         requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, RECORD_AUDIO}, permission);
         //SpeakerRecognitionUtils.setUserId(userId);
 
-
         //handleLogin();
-        getUsers();
 
         AndroidAudioConverter.load(this, new ILoadCallback() {
             @Override
@@ -119,6 +117,7 @@ public class VoiceActivity extends AppCompatActivity {
 
         SpeakerRecognitionUtils.setView(textView);
         AudioRecordingUtils.setRecordingButton(recordButton);
+        SpeakerRecognitionUtils.setContext(this);
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -302,10 +301,12 @@ public class VoiceActivity extends AppCompatActivity {
                     for(DataSnapshot snapshot: dataSnapshot.getChildren()){
                         FireBaseUser user = snapshot.getValue(FireBaseUser.class);
                         mUsers.add(user);
-                        if(user.getLinkedinUrl().equals(userURL))
-                        {
-                            startActivity(new Intent(VoiceActivity.this,StartRecordActivity.class));
-                            finish();
+                        if(user.getLinkedinUrl() != null){
+                            if(user.getLinkedinUrl().equals(userURL))
+                            {
+                                startActivity(new Intent(VoiceActivity.this,StartRecordActivity.class));
+                                finish();
+                            }
                         }
                     }
                     Log.v("","");
