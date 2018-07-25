@@ -38,13 +38,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/name" />
 
-    <EditText
+    <TextView
         android:id="@+id/transcript"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:scrollbars="vertical"
         android:ems="10"
         android:inputType="textCapSentences|textMultiLine"
         android:singleLine="false"
@@ -71,13 +72,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/transcript" />
 
-    <EditText
+    <TextView
         android:id="@+id/conversationAnalysis"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:scrollbars="vertical"
         android:ems="10"
         android:inputType="textCapSentences|textMultiLine"
         android:singleLine="false"
