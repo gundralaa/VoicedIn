@@ -12,11 +12,15 @@ import com.example.android.voicedin.User;
 
 import com.microsoft.cognitive.speakerrecognition.SpeakerIdentificationRestClient;
 import com.microsoft.cognitive.speakerrecognition.contract.identification.CreateProfileResponse;
+import com.microsoft.cognitive.speakerrecognition.contract.identification.Identification;
+import com.microsoft.cognitive.speakerrecognition.contract.identification.IdentificationOperation;
+import com.microsoft.cognitive.speakerrecognition.contract.identification.OperationLocation;
 import com.microsoft.cognitiveservices.speech.AudioInputStreamFormat;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import static android.content.ContentValues.TAG;
@@ -37,6 +41,11 @@ public class SpeakerRecognitionUtils {
     private final static int SAMPLE_RATE = 16000;
     private AudioRecord recorder;
     private static User userIn = null;
+    private static ArrayList<User> users = new ArrayList<>();
+
+    public static void initializeUsers(){
+        users.add(new User("","",1, null));
+    }
 
     public static void setView(TextView view) {
         SpeakerRecognitionUtils.view = view;
@@ -94,7 +103,61 @@ public class SpeakerRecognitionUtils {
         }
     }
 
-    public static class RecognitionTask extends AsyncTask<String,>
+    public static class RecognitionTask extends AsyncTask<String, Void, OperationLocation>{
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected OperationLocation doInBackground(String... strings) {
+            ArrayList<UUID> ids = new ArrayList<>();
+            for(User user: users){
+                ids.add(user.getVoiceID());
+            }
+            OperationLocation statusUrl = null;
+            try{
+                FileInputStream in = new FileInputStream(strings[0]);
+                statusUrl = client.identify(in, ids);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+            return statusUrl;
+        }
+
+        @Override
+        protected void onPostExecute(OperationLocation location) {
+            super.onPostExecute(location);
+            runOperationCheckInTask(location);
+        }
+
+    }
+
+    private static void runOperationCheckInTask(OperationLocation location){new OperationCheckInTask().execute(location);}
+
+    private static class OperationCheckInTask extends AsyncTask<OperationLocation, Void, UUID>{
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected UUID doInBackground(OperationLocation... locations) {
+            Identification id = null;
+            try{
+                IdentificationOperation operation = client.checkIdentificationStatus(locations[0]);
+                id = operation.processingResult;
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+            return id.identifiedProfileId;
+        }
+
+        @Override
+        protected void onPostExecute(UUID id) {
+            super.onPostExecute(id);
+        }
+    }
 
 
 
