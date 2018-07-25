@@ -11,8 +11,8 @@ import com.example.android.voicedin.ConvAnalyticsUtils.SentimentAnalysisResult;
 import com.example.android.voicedin.ConvAnalyticsUtils.KeyPhrasesAnalysisResult;
 
 public class EndActivity extends AppCompatActivity {
-    private static String transcript;
-    private static String conversationAnalysis;
+    private static String transcript = "";
+    private static String conversationAnalysis = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +37,7 @@ public class EndActivity extends AppCompatActivity {
             System.out.println(ie.getMessage());
     }
 
-        conversationAnalysis += "Sentiment Analysis: " + (Double.parseDouble(sentimentResult.SentimentScore) * 100) + "% positive\n";
+        conversationAnalysis += "Sentiment Analysis: " + (Double.parseDouble(sentimentResult.SentimentScore) * 100) + "% positive\n\n";
         conversationAnalysis += "Keywords: " + keyphraseResult.KeyPhrasesArrayAsString;
         ((TextView)findViewById(R.id.conversationAnalysis)).setText(conversationAnalysis);
         ((TextView)findViewById(R.id.conversationAnalysis)).setMovementMethod(new ScrollingMovementMethod());
