@@ -102,6 +102,9 @@ public class StartRecordActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try{
+                    ImageView recordButton = (ImageView) findViewById(R.id.recordButton);
+                    recordButton.setImageResource(R.drawable.record_button_stop);
+
                     AudioRecordingUtils.startRecordingMP3();
                     ((TextView)findViewById(R.id.recordPrompt)).setText("Stop");
                 } catch (Exception e){
