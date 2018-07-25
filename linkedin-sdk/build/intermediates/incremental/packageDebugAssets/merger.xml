@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/Users/kandarp/Kandarp/hackathon18/VoicedIn/linkedin-sdk/src/main/assets"/><source path="/Users/kandarp/Kandarp/hackathon18/VoicedIn/linkedin-sdk/build/generated/assets/shaders/debug"/></dataSet><dataSet config="debug"><source path="/Users/kandarp/Kandarp/hackathon18/VoicedIn/linkedin-sdk/src/debug/assets"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="D:\Projects\VoicedIn\linkedin-sdk\src\main\assets"/><source path="D:\Projects\VoicedIn\linkedin-sdk\build\generated\assets\shaders\debug"/></dataSet><dataSet config="debug"><source path="D:\Projects\VoicedIn\linkedin-sdk\src\debug\assets"/></dataSet></merger>
