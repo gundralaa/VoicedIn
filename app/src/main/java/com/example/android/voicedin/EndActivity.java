@@ -23,6 +23,7 @@ public class EndActivity extends AppCompatActivity {
 
         Intent startAct = getIntent();
 
+        ((TextView)findViewById(R.id.name)).setText(name.getText());
         transcript = startAct.getStringExtra("Transcript");
         ((TextView)findViewById(R.id.transcript)).setText(transcript);
         ((TextView)findViewById(R.id.transcript)).setMovementMethod(new ScrollingMovementMethod());

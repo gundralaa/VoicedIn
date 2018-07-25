@@ -67,6 +67,7 @@ public class VoiceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_voice);
         recordButton = (ImageView) findViewById(R.id.recordButton);
         textView = (TextView) findViewById(R.id.textView);
+
         handleLogin();
         PersistentDataBase.initializeUsers();
         PersistentDataBase.getUsers().add(new User("","", 5, null));
