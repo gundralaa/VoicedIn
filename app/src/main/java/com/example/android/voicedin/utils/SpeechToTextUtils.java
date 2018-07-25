@@ -1,12 +1,16 @@
 package com.example.android.voicedin.utils;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.voicedin.EndActivity;
 import com.example.android.voicedin.StartRecordActivity;
+import com.example.android.voicedin.VoiceActivity;
 import com.microsoft.cognitiveservices.speech.RecognitionStatus;
 import com.microsoft.cognitiveservices.speech.SpeechFactory;
 import com.microsoft.cognitiveservices.speech.SpeechRecognitionResult;
@@ -109,7 +113,7 @@ public class SpeechToTextUtils {
         return microphoneStream;
     }
 
-    public static void continuousSpeechCollect(Button bt, StartRecordActivity activity){
+    public static void continuousSpeechCollect(ImageView bt, StartRecordActivity activity){
         try {
             factory = SpeechFactory.fromSubscription(speechSubscriptionKey, serviceRegion);
         } catch (Exception e){
@@ -124,8 +128,13 @@ public class SpeechToTextUtils {
             @Override
             public void onClick(View view) {
                 if(continuousListeningStarted){
-                    if (reco != null){
+                    if (reco != null){ //STOP
                         final Future<Void> task = reco.stopContinuousRecognitionAsync();
+                        String transcript = "";
+                        for(String word : content){
+                            transcript += word + " ";
+                        }
+                        EndActivity.setTranscript(transcript);
                         continuousListeningStarted = false;
                     } else {
                         continuousListeningStarted = false;
