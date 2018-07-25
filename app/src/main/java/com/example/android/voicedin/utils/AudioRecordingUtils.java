@@ -7,6 +7,7 @@ import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.example.android.voicedin.StartRecordActivity;
 import com.example.android.voicedin.helper_classes.RiffHeader;
@@ -28,7 +29,7 @@ public class AudioRecordingUtils {
     //private static MediaRecorder recorder;
     private static String filePath = "recording.3gp";
     private static int recordingNumber = 1;
-    private static Button recordingButton;
+    private static ImageView recordingButton;
     private final static int SAMPLE_RATE = 8000;
     private static MediaRecorder record = null;
 
@@ -41,7 +42,7 @@ public class AudioRecordingUtils {
     private static final int BufferElements2Rec = 1024; // want to play 2048 (2K) since 2 bytes we use only 1024
     private static final int BytesPerElement = 2; // 2 bytes in 16bit format
 
-    public static void setRecordingButton(Button recordingButton) {
+    public static void setRecordingButton(ImageView recordingButton) {
         AudioRecordingUtils.recordingButton = recordingButton;
     }
 
@@ -52,7 +53,6 @@ public class AudioRecordingUtils {
     public static boolean isIsRecording() {
         return isRecording;
     }
-
 
     public static void startRecording() throws IOException, IllegalStateException {
 
