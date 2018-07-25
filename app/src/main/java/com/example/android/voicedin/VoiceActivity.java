@@ -1,10 +1,15 @@
 package com.example.android.voicedin;
 
+import android.annotation.SuppressLint;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.media.Image;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -18,6 +23,8 @@ import com.example.android.voicedin.utils.AudioRecordingUtils;
 import com.example.android.voicedin.utils.SpeakerRecognitionUtils;
 
 import java.io.File;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -48,6 +55,7 @@ import com.linkedin.platform.utils.Scope;
 import org.json.JSONObject;
 
 public class VoiceActivity extends AppCompatActivity {
+    private static final String TAG = "VoiceActivity";
     String userURL;
     String firstName;
     String lastName;
@@ -69,6 +77,7 @@ public class VoiceActivity extends AppCompatActivity {
         textView = (TextView) findViewById(R.id.textView);
 
         handleLogin();
+        getPackageHash();
         PersistentDataBase.initializeUsers();
         PersistentDataBase.getUsers().add(new User("","", 5, null));
 
@@ -227,6 +236,26 @@ public class VoiceActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void getPackageHash() {
+        try {
+
+            @SuppressLint("PackageManagerGetSignatures") PackageInfo info = getPackageManager().getPackageInfo(
+                    "com.example.android.voicedin",//give your package name here
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+
+                Log.d(TAG, "Hash  : " + Base64.encodeToString(md.digest(), Base64.NO_WRAP));//Key hash is printing in Log
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.d(TAG, e.getMessage(), e);
+        } catch (NoSuchAlgorithmException e) {
+            Log.d(TAG, e.getMessage(), e);
+        }
+
     }
 
     private void setUpdateState() {
