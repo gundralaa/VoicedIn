@@ -47,7 +47,17 @@ public class SpeakerRecognitionUtils {
     private static ArrayList<User> users = new ArrayList<>();
     private static ArrayList<UUID> ids = new ArrayList<>();
 
+    private static UUID userId = null;
+
     private static OperationLocation statLocation = null;
+
+    public static UUID getUserId() {
+        return userId;
+    }
+
+    public static void setUserId(UUID userId) {
+        SpeakerRecognitionUtils.userId = userId;
+    }
 
     public static void initializeUsers(){
         users.add(new User("Virginia","",1, UUID.fromString("f83d2117-e055-416c-80eb-4db7d6e8797d")));
@@ -93,6 +103,7 @@ public class SpeakerRecognitionUtils {
             view.setText(user.getVoiceID().toString());
             Log.d(TAG, user.getVoiceID() + "");
             userIn = user;
+            userId = user.getVoiceID();
         }
     }
 

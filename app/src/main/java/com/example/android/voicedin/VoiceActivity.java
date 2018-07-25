@@ -12,6 +12,7 @@ import com.example.android.voicedin.utils.AudioRecordingUtils;
 import com.example.android.voicedin.utils.SpeakerRecognitionUtils;
 
 import java.io.File;
+import java.util.UUID;
 
 import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
 import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
@@ -46,6 +47,7 @@ public class VoiceActivity extends AppCompatActivity {
     String lastName;
     Button button;
     TextView textView;
+    UUID userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,7 @@ public class VoiceActivity extends AppCompatActivity {
         button = (Button) findViewById(R.id.button);
         textView = (TextView) findViewById(R.id.textView);
         requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, RECORD_AUDIO}, permission);
+        SpeakerRecognitionUtils.setUserId(userId);
 
         AndroidAudioConverter.load(this, new ILoadCallback() {
             @Override
