@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.example.android.voicedin.Location;
 import com.example.android.voicedin.User;
 
+import com.example.android.voicedin.helper_classes.PersistentDataBase;
 import com.microsoft.cognitive.speakerrecognition.SpeakerIdentificationRestClient;
 import com.microsoft.cognitive.speakerrecognition.contract.identification.CreateProfileResponse;
 import com.microsoft.cognitive.speakerrecognition.contract.identification.Identification;
@@ -44,8 +45,7 @@ public class SpeakerRecognitionUtils {
     private final static int SAMPLE_RATE = 16000;
     private AudioRecord recorder;
     private static User userIn = null;
-    private static ArrayList<User> users = new ArrayList<>();
-    private static ArrayList<UUID> ids = new ArrayList<>();
+
 
     private static UUID userId = null;
 
@@ -57,17 +57,6 @@ public class SpeakerRecognitionUtils {
 
     public static void setUserId(UUID userId) {
         SpeakerRecognitionUtils.userId = userId;
-    }
-
-    public static void initializeUsers(){
-        users.add(new User("Virginia","",1, UUID.fromString("f83d2117-e055-416c-80eb-4db7d6e8797d")));
-        users.add(new User("Sierra","",2,UUID.fromString("c8bf9a96-3dea-46b6-ab26-6ccd7abe0239")));
-        users.add(new User("Bella","",3,UUID.fromString("d894afa4-fe93-42cb-85d3-b7514302dcf8")));
-        users.add(new User("Abhi","",4,UUID.fromString("9ae33021-a13d-44dc-868a-92304acb6f89")));
-
-        for(User user: users){
-            ids.add(user.getVoiceID());
-        }
     }
 
     public static void setNameView(TextView nameView) {
@@ -104,6 +93,7 @@ public class SpeakerRecognitionUtils {
             Log.d(TAG, user.getVoiceID() + "");
             userIn = user;
             userId = user.getVoiceID();
+            PersistentDataBase.getUsers().set(4, user);
         }
     }
 
@@ -144,7 +134,7 @@ public class SpeakerRecognitionUtils {
             OperationLocation statusUrl = null;
             try{
                 FileInputStream in = new FileInputStream(strings[0]);
-                statusUrl = client.identify(in, (List<UUID>) ids,true);
+                statusUrl = client.identify(in, (List<UUID>) PersistentDataBase.getIds(),true);
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -190,9 +180,9 @@ public class SpeakerRecognitionUtils {
         @Override
         protected void onPostExecute(UUID id) {
             super.onPostExecute(id);
-            int i = ids.indexOf(id);
-            Log.d(TAG, "Name of User: " + users.get(i).getName() );
-            nameView.setText(users.get(i).getName());
+            int i = PersistentDataBase.getIds().indexOf(id);
+            Log.d(TAG, "Name of User: " + PersistentDataBase.getUsers().get(i).getName() );
+            nameView.setText(PersistentDataBase.getUsers().get(i).getName());
 
         }
     }

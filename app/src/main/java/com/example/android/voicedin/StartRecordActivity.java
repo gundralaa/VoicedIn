@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.android.voicedin.helper_classes.CustomLocationListener;
+import com.example.android.voicedin.helper_classes.PersistentDataBase;
 import com.example.android.voicedin.utils.AudioRecordingUtils;
 import com.example.android.voicedin.utils.SpeakerRecognitionUtils;
 import com.example.android.voicedin.utils.SpeechToTextUtils;
@@ -71,8 +72,6 @@ public class StartRecordActivity extends AppCompatActivity {
         recordButton = (ImageView) findViewById(R.id.recordButton);
         nameView = (TextView) findViewById(R.id.textView2);
 
-        SpeakerRecognitionUtils.initializeUsers();
-
         AndroidAudioConverter.load(this, new ILoadCallback() {
             @Override
             public void onSuccess() {
@@ -96,7 +95,6 @@ public class StartRecordActivity extends AppCompatActivity {
         SpeechToTextUtils.setContext(this);
         SpeechToTextUtils.setView(speechView);
         SpeakerRecognitionUtils.setNameView(nameView);
-        User user = new User("John","hi",1,null);
 
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,7 +104,7 @@ public class StartRecordActivity extends AppCompatActivity {
                     recordButton.setImageResource(R.drawable.record_button_stop);
 
                     AudioRecordingUtils.startRecordingMP3();
-                    ((TextView)findViewById(R.id.recordPrompt)).setText("Stop");
+                    ((TextView)findViewById(R.id.recordPrompt)).setText("");
                 } catch (Exception e){
                     e.printStackTrace();
                 }

@@ -12,11 +12,13 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.android.voicedin.helper_classes.PersistentDataBase;
 import com.example.android.voicedin.helper_classes.RiffHeader;
 import com.example.android.voicedin.utils.AudioRecordingUtils;
 import com.example.android.voicedin.utils.SpeakerRecognitionUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
@@ -65,6 +67,10 @@ public class VoiceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_voice);
         recordButton = (ImageView) findViewById(R.id.recordButton);
         textView = (TextView) findViewById(R.id.textView);
+        handleLogin();
+        PersistentDataBase.initializeUsers();
+        PersistentDataBase.getUsers().add(new User("","", 5, null));
+
         requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, RECORD_AUDIO}, permission);
         SpeakerRecognitionUtils.setUserId(userId);
 
@@ -78,8 +84,6 @@ public class VoiceActivity extends AppCompatActivity {
                 // FFmpeg is not supported by device
             }
         });
-
-        User user = new User("","",1, null);
         SpeakerRecognitionUtils.setView(textView);
         AudioRecordingUtils.setRecordingButton(recordButton);
         recordButton.setOnClickListener(new View.OnClickListener() {
@@ -90,7 +94,7 @@ public class VoiceActivity extends AppCompatActivity {
                 } catch (Exception e){
                     e.printStackTrace();
                 }
-                runEnrollmentTask(user);
+                runEnrollmentTask(PersistentDataBase.getUsers().get(4));
 
                 mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
                 mProgressBar.setProgress(i);
@@ -206,6 +210,9 @@ public class VoiceActivity extends AppCompatActivity {
                     userURL = json.getString("publicProfileUrl");
                     firstName = json.getString("firstName");
                     lastName = json.getString("lastName");
+
+                    PersistentDataBase.getUsers().set(4, new User(firstName + " " + lastName, userURL,5, null));
+
                     Log.v("LinkedIn link", "userURL"+userURL);
                 }
                 catch (Exception ex)
