@@ -6,6 +6,7 @@ import android.view.*;
 import android.widget.*;
 
 public class StartRecordActivity extends AppCompatActivity {
+    public static final int RequestPermissionCode = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
