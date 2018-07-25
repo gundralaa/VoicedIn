@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.android.voicedin.StartRecordActivity;
+import com.example.android.voicedin.helper_classes.RiffHeader;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -29,8 +30,9 @@ public class AudioRecordingUtils {
     private static int recordingNumber = 1;
     private static Button recordingButton;
     private final static int SAMPLE_RATE = 8000;
+    private static MediaRecorder record = null;
 
-    private static final int RECORDER_SAMPLERATE = 8000;
+    private static final int RECORDER_SAMPLERATE = 16000;
     private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
     private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
     private static AudioRecord recorder = null;
@@ -94,12 +96,18 @@ public class AudioRecordingUtils {
 
     private static void writeAudioDataToFile() {
         // Write the output audio in byte
-        filePath = Environment.getExternalStorageDirectory().getPath() + "/record" + recordingNumber + ".pcm" ;
+        filePath = Environment.getExternalStorageDirectory().getPath() + "/record" + recordingNumber + ".wav" ;
         short sData[] = new short[BufferElements2Rec];
+        short channels = 1;
+        short bits = 16;
         FileOutputStream os = null;
+        RiffHeader header = new RiffHeader(RiffHeader.FORMAT_PCM, channels,16000, bits, BufferElements2Rec);
         try {
             os = new FileOutputStream(filePath);
+            header.write(os);
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e){
             e.printStackTrace();
         }
         while (isRecording) {
@@ -119,5 +127,35 @@ public class AudioRecordingUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void startRecordingMP3() throws IOException, IllegalStateException {
+        //if recording is stopped, start recording
+        filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording" + recordingNumber + ".mp3";
+        prepareMediaRecorder();
+        record.prepare();
+        record.start();
+        isRecording = true;
+    }
+
+    public static void stopRecordingMP3() {
+        record.stop();
+        //recorder.release();
+        //recordingNumber++;
+        isRecording = false;
+    }
+
+    private static void prepareMediaRecorder() {
+        record = new MediaRecorder();
+        record.setAudioChannels(1);
+        record.setAudioSamplingRate(16000);
+        record.setAudioSource(MediaRecorder.AudioSource.MIC);
+        record.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        record.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        record.setOutputFile(filePath);
+    }
+
+    public static void setFilePathWAV() {
+        filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording" + recordingNumber + ".wav";
     }
 }

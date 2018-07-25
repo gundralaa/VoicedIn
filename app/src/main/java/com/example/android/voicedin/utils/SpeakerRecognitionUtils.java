@@ -81,7 +81,7 @@ public class SpeakerRecognitionUtils {
             UUID voiceId = userIn.getVoiceID();
             try{
                 FileInputStream in = new FileInputStream(strings[0]);
-                client.enroll(in, voiceId);
+                client.enroll(in, voiceId,true);
             } catch (Exception e) {
                 e.printStackTrace();
             }

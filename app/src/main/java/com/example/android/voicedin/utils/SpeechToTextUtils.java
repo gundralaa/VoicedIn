@@ -124,7 +124,7 @@ public class SpeechToTextUtils {
             public void onClick(View view) {
                 if(continuousListeningStarted){
                     if (reco != null){
-                        final Future<Void> task = reco.startContinuousRecognitionAsync();
+                        final Future<Void> task = reco.stopContinuousRecognitionAsync();
                         continuousListeningStarted = false;
                     } else {
                         continuousListeningStarted = false;
