@@ -12,6 +12,8 @@ import com.example.android.voicedin.utils.AudioRecordingUtils;
 import com.example.android.voicedin.utils.SpeakerRecognitionUtils;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
 import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
@@ -27,6 +29,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.linkedin.platform.APIHelper;
 import com.linkedin.platform.LISession;
 import com.linkedin.platform.LISessionManager;
@@ -46,6 +54,8 @@ public class VoiceActivity extends AppCompatActivity {
     String lastName;
     Button button;
     TextView textView;
+    List<FireBaseUser> mUsers;
+    boolean isUserRegistered = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +65,8 @@ public class VoiceActivity extends AppCompatActivity {
         button = (Button) findViewById(R.id.button);
         textView = (TextView) findViewById(R.id.textView);
         requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, RECORD_AUDIO}, permission);
-
+        handleLogin();
+        //getUsers();
         AndroidAudioConverter.load(this, new ILoadCallback() {
             @Override
             public void onSuccess() {
@@ -67,7 +78,7 @@ public class VoiceActivity extends AppCompatActivity {
             }
         });
 
-        User user = new User("","",1, null);
+        User user = new User( firstName+" "+lastName,userURL,null, null);
         SpeakerRecognitionUtils.setView(textView);
         AudioRecordingUtils.setRecordingButton(button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -105,6 +116,8 @@ public class VoiceActivity extends AppCompatActivity {
             public void onSuccess(File convertedFile) {
                 // So fast? Love it!
                 AudioRecordingUtils.setFilePathWAV();
+                SpeakerRecognitionUtils.userIn.setName(firstName+" "+lastName);
+                SpeakerRecognitionUtils.userIn.setLinkedInURL(userURL);
                 runAudioEnrollmentTask(AudioRecordingUtils.getFilePath());
             }
             @Override
@@ -177,6 +190,7 @@ public class VoiceActivity extends AppCompatActivity {
                     userURL = json.getString("publicProfileUrl");
                     firstName = json.getString("firstName");
                     lastName = json.getString("lastName");
+                    getUsers();
                     Log.v("LinkedIn link", "userURL"+userURL);
                 }
                 catch (Exception ex)
@@ -216,4 +230,44 @@ public class VoiceActivity extends AppCompatActivity {
         ((Button) findViewById(R.id.deeplink)).setEnabled(accessTokenValid);*/
     }
 
+    private void getUsers(){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    mUsers = new ArrayList<>();
+                    for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                        FireBaseUser user = snapshot.getValue(FireBaseUser.class);
+                        mUsers.add(user);
+                        if(user.getLinkedinUrl() == userURL)
+                        {
+                            startActivity(new Intent(VoiceActivity.this,StartRecordActivity.class));
+                            finish();
+                        }
+                    }
+                    Log.v("","");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    /*private void saveUserData(){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        FireBaseUser user = new FireBaseUser();
+        user.setId("test");
+        user.setFirstName("test");
+        user.setLastName("test");
+        user.setLinkedinUrl("test");
+
+        databaseReference.child("users").child("uid").setValue(user);
+    }*/
 }

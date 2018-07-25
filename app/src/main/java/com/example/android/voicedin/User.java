@@ -5,11 +5,11 @@ import java.util.UUID;
 public class User {
     private String name = "";
     private String linkedInURL = "";
-    int userID = 0;
+    String userID;
     UUID voiceID;
 
     //constructor
-    public User(String name, String linkedInURL, int userID, UUID voiceID){
+    public User(String name, String linkedInURL, String userID, UUID voiceID){
         this.name = name;
         this.linkedInURL = linkedInURL;
         this.userID = userID;
@@ -24,7 +24,7 @@ public class User {
     public String getLinkedInURL(){
         return linkedInURL;
     }
-    public int getUserID(){
+    public String getUserID(){
         return userID;
     }
     public UUID getVoiceID(){
@@ -39,7 +39,7 @@ public class User {
     public void setLinkedInURL(String linkedInURL){
         this.linkedInURL = linkedInURL;
     }
-    public void setUserID(int userID){
+    public void setUserID(String userID){
         this.userID = userID;
     }
     public void setVoiceID(UUID voiceID) {

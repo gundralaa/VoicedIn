@@ -27,6 +27,11 @@ import com.example.android.voicedin.helper_classes.CustomLocationListener;
 import com.example.android.voicedin.utils.AudioRecordingUtils;
 import com.example.android.voicedin.utils.SpeakerRecognitionUtils;
 import com.example.android.voicedin.utils.SpeechToTextUtils;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.microsoft.cognitiveservices.speech.SpeechFactory;
 
 import static android.Manifest.permission.INTERNET;
@@ -40,6 +45,9 @@ import android.os.*;
 import android.view.*;
 import android.widget.*;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.media.*;
 
 import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
@@ -62,6 +70,7 @@ public class StartRecordActivity extends AppCompatActivity {
     Button recordingButton;
     TextView nameView;
     StartRecordActivity context = this;
+    List<FireBaseUser> mUsers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +86,8 @@ public class StartRecordActivity extends AppCompatActivity {
         recordingButton = (Button) findViewById(R.id.recordingButton);
         nameView = (TextView) findViewById(R.id.textView2);
 
-        SpeakerRecognitionUtils.initializeUsers();
+        //SpeakerRecognitionUtils.initializeUsers();
+        getUsers();
 
         AndroidAudioConverter.load(this, new ILoadCallback() {
             @Override
@@ -121,7 +131,7 @@ public class StartRecordActivity extends AppCompatActivity {
         SpeechToTextUtils.setView(speechView);
         SpeakerRecognitionUtils.setNameView(nameView);
         //AudioRecordingUtils.setRecordingButton(recordingButton);
-        User user = new User("John","hi",1,null);
+        //User user = new User("John","hi",1,null);
 
         recordingButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,6 +152,31 @@ public class StartRecordActivity extends AppCompatActivity {
                     }
                 }, 10000);
 
+
+            }
+        });
+
+    }
+
+    private void getUsers(){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    mUsers = new ArrayList<>();
+                    for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                        FireBaseUser user = snapshot.getValue(FireBaseUser.class);
+                        mUsers.add(user);
+                    }
+                    SpeakerRecognitionUtils.initializeUsers(mUsers);
+                    Log.v("","");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
