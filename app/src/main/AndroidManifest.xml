@@ -17,14 +17,12 @@
         <activity android:name=".SignInActivity">
         </activity>
         <activity android:name=".VoiceActivity" >
+        </activity>
+        <activity android:name=".StartRecordActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <activity android:name=".StartRecordActivity" >
         </activity>
         <activity android:name=".EndActivity"></activity>
     </application>

@@ -67,6 +67,7 @@ public class StartRecordActivity extends AppCompatActivity {
         gpsView = (TextView) findViewById(R.id.gps_view);
         speechView = (TextView) findViewById(R.id.speech_text_view);
         recordingButton = (Button) findViewById(R.id.recordingButton);
+
         /*
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
@@ -96,7 +97,7 @@ public class StartRecordActivity extends AppCompatActivity {
         }
         SpeechToTextUtils.setContext(this);
         SpeechToTextUtils.setView(speechView);
-        AudioRecordingUtils.setRecordingButton(recordingButton);
+        //AudioRecordingUtils.setRecordingButton(recordingButton);
         User user = new User("John","hi",1,null);
         SpeechToTextUtils.continuousSpeechCollect(recordingButton, this);
     }
