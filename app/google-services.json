@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "575084386986",
+    "firebase_url": "https://voicedin-hackathon.firebaseio.com",
+    "project_id": "voicedin-hackathon",
+    "storage_bucket": "voicedin-hackathon.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:575084386986:android:4cbc1295fdd94640",
+        "android_client_info": {
+          "package_name": "com.example.android.voicedin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "575084386986-fju4or6j5qvndafc33u2pqc73tq6rt3i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.voicedin",
+            "certificate_hash": "6d26524cc4669136977cab7306787610c20c008b"
+          }
+        },
+        {
+          "client_id": "575084386986-b0flpqbpjr3m0nfd9e91g7j924b3pck9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgXd5EK6cQ9cu2RCj2ZfWIdhKRxXyvBZc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "575084386986-b0flpqbpjr3m0nfd9e91g7j924b3pck9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
