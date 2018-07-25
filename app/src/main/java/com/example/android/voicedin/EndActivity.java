@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.android.voicedin.ConvAnalyticsUtils.SentimentAnalysisResult;
+import com.example.android.voicedin.ConvAnalyticsUtils.KeyPhrasesAnalysisResult;
 
 public class EndActivity extends AppCompatActivity {
     private static String transcript;
@@ -24,18 +25,20 @@ public class EndActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.transcript)).setText(transcript);
         ((TextView)findViewById(R.id.transcript)).setMovementMethod(new ScrollingMovementMethod());
 
-        SentimentAnalysisResult result = new SentimentAnalysisResult(transcript);
-        result.runSentimentAnalysis();
+        SentimentAnalysisResult sentimentResult = new SentimentAnalysisResult(transcript);
+        sentimentResult.runSentimentAnalysis();
+        KeyPhrasesAnalysisResult keyphraseResult = new KeyPhrasesAnalysisResult(transcript);
+        keyphraseResult.runKeyPhrasesAnalysis();
         try {
-            while (!result.SearchComplete) {
+            while (!sentimentResult.SearchComplete || !keyphraseResult.SearchComplete) {
                 Thread.sleep(100);
             }
         } catch (InterruptedException ie) {
             System.out.println(ie.getMessage());
-        }
+    }
 
-        conversationAnalysis += "Sentiment Analysis: " + (Double.parseDouble(result.SentimentScore) * 100) + "% positive\n";
-        conversationAnalysis += "Keywords: ";
+        conversationAnalysis += "Sentiment Analysis: " + (Double.parseDouble(sentimentResult.SentimentScore) * 100) + "% positive\n";
+        conversationAnalysis += "Keywords: " + keyphraseResult.KeyPhrasesArrayAsString;
         ((TextView)findViewById(R.id.conversationAnalysis)).setText(conversationAnalysis);
         ((TextView)findViewById(R.id.conversationAnalysis)).setMovementMethod(new ScrollingMovementMethod());
     }
