@@ -45,7 +45,7 @@ dependencies {
     }
     compile 'com.github.adrielcafe:AndroidAudioConverter:0.0.8'
     implementation project(':linkedin-sdk')
-    compile 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.code.gson:gson:2.8.5'
 
 }
 
