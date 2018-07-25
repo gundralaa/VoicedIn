@@ -1,10 +1,13 @@
 package com.example.android.voicedin;
 
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.voicedin.helper_classes.RiffHeader;
@@ -41,20 +44,24 @@ import com.linkedin.platform.utils.Scope;
 import org.json.JSONObject;
 
 public class VoiceActivity extends AppCompatActivity {
-
     String userURL;
     String firstName;
     String lastName;
-    Button button;
+    ImageView recordButton;
     TextView textView;
     UUID userId;
+    ProgressBar mProgressBar;
+    CountDownTimer mCountDownTimer;
+    int i = 0;
+    final int totalMilliseconds = 30000; //30 seconds
+    final int countDownInterval = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         int permission = 1;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice);
-        button = (Button) findViewById(R.id.button);
+        recordButton = (ImageView) findViewById(R.id.recordButton);
         textView = (TextView) findViewById(R.id.textView);
         requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, RECORD_AUDIO}, permission);
         SpeakerRecognitionUtils.setUserId(userId);
@@ -72,28 +79,45 @@ public class VoiceActivity extends AppCompatActivity {
 
         User user = new User("","",1, null);
         SpeakerRecognitionUtils.setView(textView);
-        AudioRecordingUtils.setRecordingButton(button);
-        button.setOnClickListener(new View.OnClickListener() {
+        AudioRecordingUtils.setRecordingButton(recordButton);
+        recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(AudioRecordingUtils.isIsRecording()){
-                    button.setText("Done");
-                    try {
-                        AudioRecordingUtils.stopRecordingMP3();
-                    } catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    //runAudioEnrollmentTask(AudioRecordingUtils.getFilePath());
-                    convertToWave();
-                } else {
-                    try {
-                        AudioRecordingUtils.startRecordingMP3();
-                    } catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    runEnrollmentTask(user);
-                    button.setText("Stop");
+                try {
+                    AudioRecordingUtils.startRecordingMP3();
+                } catch (Exception e){
+                    e.printStackTrace();
                 }
+                runEnrollmentTask(user);
+
+                mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
+                mProgressBar.setProgress(i);
+                mCountDownTimer = new CountDownTimer(totalMilliseconds,countDownInterval) {
+
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        Log.v("Log_tag", "Tick of Progress"+ i + millisUntilFinished);
+                        i++;
+                        mProgressBar.setProgress((int)i*100/(totalMilliseconds/countDownInterval));
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        i++;
+                        mProgressBar.setProgress(100);
+
+                        try {
+                            AudioRecordingUtils.stopRecordingMP3();
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
+                        convertToWave();
+
+                        Intent intent = new Intent(VoiceActivity.this, StartRecordActivity.class);
+                        startActivity(intent);
+                    }
+                };
+                mCountDownTimer.start();
             }
         });
     }
@@ -193,30 +217,12 @@ public class VoiceActivity extends AppCompatActivity {
 
             }
         });
-
-        /*APIHelper apiHelper = APIHelper.getInstance(getApplicationContext());
-        apiHelper.postRequest(ApiActivity.this, shareUrl, shareJsonText, new ApiListener() {
-            @Override
-            public void onApiSuccess(ApiResponse apiResponse) {
-                ((TextView) findViewById(R.id.response)).setText(apiResponse.toString());
-            }
-
-            @Override
-            public void onApiError(LIApiError error) {
-                ((TextView) findViewById(R.id.response)).setText(error.toString());
-            }
-        });*/
     }
 
     private void setUpdateState() {
         LISessionManager sessionManager = LISessionManager.getInstance(getApplicationContext());
         LISession session = sessionManager.getSession();
         boolean accessTokenValid = session.isValid();
-
-        /*((TextView) findViewById(R.id.at)).setText(
-                accessTokenValid ? session.getAccessToken().toString() : "Sync with LinkedIn to enable these buttons");
-        ((Button) findViewById(R.id.apiCall)).setEnabled(accessTokenValid);
-        ((Button) findViewById(R.id.deeplink)).setEnabled(accessTokenValid);*/
     }
 
 }
