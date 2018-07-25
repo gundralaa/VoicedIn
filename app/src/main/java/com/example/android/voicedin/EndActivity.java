@@ -1,5 +1,6 @@
 package com.example.android.voicedin;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.EditText;
@@ -14,6 +15,10 @@ public class EndActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_end);
+
+        Intent startAct = getIntent();
+
+        transcript = startAct.getStringExtra("Transcript");
 
         ((EditText)findViewById(R.id.transcript)).setText(transcript);
 

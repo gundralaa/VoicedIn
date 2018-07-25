@@ -2,6 +2,7 @@ package com.example.android.voicedin.utils;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import static android.support.v4.content.ContextCompat.startActivity;
 
 /**
  * Created by abhin on 7/23/2018.
@@ -134,7 +137,10 @@ public class SpeechToTextUtils {
                         for(String word : content){
                             transcript += word + " ";
                         }
-                        EndActivity.setTranscript(transcript);
+                        Intent endStart = new Intent(activity, EndActivity.class);
+                        endStart.putExtra("Transcript", transcript);
+                        startActivity(activity,endStart, new Bundle());
+
                         continuousListeningStarted = false;
                     } else {
                         continuousListeningStarted = false;
