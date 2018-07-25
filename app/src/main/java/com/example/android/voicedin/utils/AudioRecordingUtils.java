@@ -26,7 +26,6 @@ import static com.example.android.voicedin.StartRecordActivity.RequestPermission
 
 public class AudioRecordingUtils {
     private static boolean isRecording = false;
-    //private static MediaRecorder recorder;
     private static String filePath = "recording.3gp";
     private static int recordingNumber = 1;
     private static ImageView recordingButton;
