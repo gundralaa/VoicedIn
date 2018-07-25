@@ -57,9 +57,8 @@ public class StartRecordActivity extends AppCompatActivity {
 
     private static final String TAG = "StartRecordActivity" ;
     private static final int PERMISSION_REQUEST_CODE = 1;
-    TextView gpsView;
     TextView speechView;
-    Button recordingButton;
+    ImageView recordButton;
     TextView nameView;
     StartRecordActivity context = this;
 
@@ -68,13 +67,8 @@ public class StartRecordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_record);
 
-        // Start Location Management Activities
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        final boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        gpsView = (TextView) findViewById(R.id.gps_view);
         speechView = (TextView) findViewById(R.id.speech_text_view);
-        recordingButton = (Button) findViewById(R.id.recordingButton);
+        recordButton = (ImageView) findViewById(R.id.recordButton);
         nameView = (TextView) findViewById(R.id.textView2);
 
         SpeakerRecognitionUtils.initializeUsers();
@@ -90,24 +84,6 @@ public class StartRecordActivity extends AppCompatActivity {
             }
         });
 
-        /*
-        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
-
-        if (!gpsEnabled) {
-            enableLocationSettings();
-        } else {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "System Permissions not Present");
-                requestPermissions(permissions, PERMISSION_REQUEST_CODE);
-            }
-            LocationProvider provider = locationManager.getProvider(LocationManager.GPS_PROVIDER);
-            CustomLocationListener listener = new CustomLocationListener();
-            listener.setGpsView(gpsView);
-            locationManager.requestLocationUpdates(provider.getName(), 100000, 10, listener);
-        }
-        */
-
-
         int requestCode = 5; // unique code for the permission request
         ActivityCompat.requestPermissions(this, new String[]{RECORD_AUDIO, INTERNET, WRITE_EXTERNAL_STORAGE}, requestCode);
 
@@ -120,14 +96,14 @@ public class StartRecordActivity extends AppCompatActivity {
         SpeechToTextUtils.setContext(this);
         SpeechToTextUtils.setView(speechView);
         SpeakerRecognitionUtils.setNameView(nameView);
-        //AudioRecordingUtils.setRecordingButton(recordingButton);
         User user = new User("John","hi",1,null);
 
-        recordingButton.setOnClickListener(new View.OnClickListener() {
+        recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try{
                     AudioRecordingUtils.startRecordingMP3();
+                    ((TextView)findViewById(R.id.recordPrompt)).setText("Stop");
                 } catch (Exception e){
                     e.printStackTrace();
                 }
@@ -138,20 +114,12 @@ public class StartRecordActivity extends AppCompatActivity {
                         AudioRecordingUtils.stopRecordingMP3();
                         convertToWave();
 
-                        SpeechToTextUtils.continuousSpeechCollect(recordingButton, context);
+                        SpeechToTextUtils.continuousSpeechCollect(recordButton, context);
                     }
                 }, 10000);
-
-
             }
         });
 
-    }
-
-
-    private void enableLocationSettings() {
-        Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        startActivity(settingsIntent);
     }
 
     @Override

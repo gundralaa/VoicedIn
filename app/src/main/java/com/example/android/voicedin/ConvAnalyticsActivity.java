@@ -51,6 +51,4 @@ public class ConvAnalyticsActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
     }
-
-
 }
