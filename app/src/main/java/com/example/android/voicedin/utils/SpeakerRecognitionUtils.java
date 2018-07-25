@@ -94,6 +94,8 @@ public class SpeakerRecognitionUtils {
         }
     }
 
+    public static class RecognitionTask extends AsyncTask<String,>
+
 
 
 
