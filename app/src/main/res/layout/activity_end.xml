@@ -98,7 +98,6 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Sample LinkedIn url"
         android:textAlignment="center"
         android:textColor="@android:color/black"
         android:textSize="18sp"

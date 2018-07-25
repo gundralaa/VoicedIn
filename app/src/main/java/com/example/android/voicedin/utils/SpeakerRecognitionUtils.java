@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.example.android.voicedin.EndActivity;
 import com.example.android.voicedin.Location;
 import com.example.android.voicedin.User;
 
@@ -61,6 +62,7 @@ public class SpeakerRecognitionUtils {
 
     public static void setNameView(TextView nameView) {
         SpeakerRecognitionUtils.nameView = nameView;
+        EndActivity.setNameView(nameView);
     }
 
     public static void setView(TextView view) {
