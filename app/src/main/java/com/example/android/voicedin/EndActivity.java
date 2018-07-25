@@ -11,8 +11,8 @@ import com.example.android.voicedin.ConvAnalyticsUtils.SentimentAnalysisResult;
 import com.example.android.voicedin.ConvAnalyticsUtils.KeyPhrasesAnalysisResult;
 
 public class EndActivity extends AppCompatActivity {
-    private static String transcript;
-    private static String conversationAnalysis;
+    private static String transcript = "";
+    private static String conversationAnalysis = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
