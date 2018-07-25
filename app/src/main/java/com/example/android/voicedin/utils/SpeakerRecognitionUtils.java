@@ -8,11 +8,20 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
 
+
 import com.example.android.voicedin.EndActivity;
 import com.example.android.voicedin.Location;
 import com.example.android.voicedin.User;
 
 import com.example.android.voicedin.helper_classes.PersistentDataBase;
+
+import com.example.android.voicedin.FireBaseUser;
+import com.example.android.voicedin.Location;
+import com.example.android.voicedin.User;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import com.microsoft.cognitive.speakerrecognition.SpeakerIdentificationRestClient;
 import com.microsoft.cognitive.speakerrecognition.contract.identification.CreateProfileResponse;
 import com.microsoft.cognitive.speakerrecognition.contract.identification.Identification;
@@ -45,7 +54,10 @@ public class SpeakerRecognitionUtils {
     private static TextView nameView;
     private final static int SAMPLE_RATE = 16000;
     private AudioRecord recorder;
-    private static User userIn = null;
+    public static User userIn = null;
+
+    private static ArrayList<User> users = new ArrayList<>();
+    private static ArrayList<UUID> ids = new ArrayList<>();
 
 
     private static UUID userId = null;
@@ -58,6 +70,24 @@ public class SpeakerRecognitionUtils {
 
     public static void setUserId(UUID userId) {
         SpeakerRecognitionUtils.userId = userId;
+    }
+
+    /*public static void initializeUsers(){
+        users.add(new User("Virginia","",1, UUID.fromString("f83d2117-e055-416c-80eb-4db7d6e8797d")));
+        users.add(new User("Sierra","",2,UUID.fromString("c8bf9a96-3dea-46b6-ab26-6ccd7abe0239")));
+        users.add(new User("Bella","",3,UUID.fromString("d894afa4-fe93-42cb-85d3-b7514302dcf8")));
+        users.add(new User("Abhi","",4,UUID.fromString("9ae33021-a13d-44dc-868a-92304acb6f89")));
+
+        for(User user: users){
+            ids.add(user.getVoiceID());
+        }
+    }*/
+
+    public static void initializeUsers(List<FireBaseUser> users)
+    {
+        for(FireBaseUser user:users){
+            ids.add(UUID.fromString(user.getId()));
+        }
     }
 
     public static void setNameView(TextView nameView) {
@@ -85,6 +115,7 @@ public class SpeakerRecognitionUtils {
                 e.printStackTrace();
             }
             users[0].setVoiceID(clientProfile.identificationProfileId);
+            users[0].setUserID(clientProfile.identificationProfileId.toString());
             return users[0];
         }
 
@@ -97,6 +128,7 @@ public class SpeakerRecognitionUtils {
             userId = user.getVoiceID();
             PersistentDataBase.getUsers().set(4, user);
         }
+
     }
 
     public static class AudioEnrollmentTask extends AsyncTask<String, Void, User>{
@@ -120,6 +152,18 @@ public class SpeakerRecognitionUtils {
         @Override
         protected void onPostExecute(User user) {
             super.onPostExecute(user);
+            saveUserData(userIn.getUserID(), userIn.getName(), userIn.getLinkedInURL());
+        }
+
+        private void saveUserData(String userId, String name, String linkedInURL){
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+            FireBaseUser user = new FireBaseUser();
+            user.setId(userId);
+            user.setName(name);
+            user.setLinkedinUrl(linkedInURL);
+
+            databaseReference.child("users").child("uid").setValue(user);
         }
     }
 

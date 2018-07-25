@@ -23,10 +23,15 @@ import com.example.android.voicedin.utils.AudioRecordingUtils;
 import com.example.android.voicedin.utils.SpeakerRecognitionUtils;
 
 import java.io.File;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.UUID;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
 import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
@@ -36,12 +41,20 @@ import cafe.adriel.androidaudioconverter.model.AudioFormat;
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static com.example.android.voicedin.StartRecordActivity.RequestPermissionCode;
+import static com.example.android.voicedin.helper_classes.PersistentDataBase.getUsers;
+
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.linkedin.platform.APIHelper;
 import com.linkedin.platform.LISession;
 import com.linkedin.platform.LISessionManager;
@@ -68,6 +81,10 @@ public class VoiceActivity extends AppCompatActivity {
     final int totalMilliseconds = 30000; //30 seconds
     final int countDownInterval = 1000;
 
+    List<FireBaseUser> mUsers;
+    boolean isUserRegistered = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         int permission = 1;
@@ -78,11 +95,15 @@ public class VoiceActivity extends AppCompatActivity {
 
         handleLogin();
         getPackageHash();
-        PersistentDataBase.initializeUsers();
-        PersistentDataBase.getUsers().add(new User("","", 5, null));
+        //PersistentDataBase.initializeUsers();
+        //getUsers().add(new User("","", 5, null));
 
         requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, RECORD_AUDIO}, permission);
         SpeakerRecognitionUtils.setUserId(userId);
+
+
+        //handleLogin();
+        getUsers();
 
         AndroidAudioConverter.load(this, new ILoadCallback() {
             @Override
@@ -94,6 +115,9 @@ public class VoiceActivity extends AppCompatActivity {
                 // FFmpeg is not supported by device
             }
         });
+
+        User user = new User( firstName+" "+lastName,userURL,null, null);
+
         SpeakerRecognitionUtils.setView(textView);
         AudioRecordingUtils.setRecordingButton(recordButton);
         recordButton.setOnClickListener(new View.OnClickListener() {
@@ -104,7 +128,7 @@ public class VoiceActivity extends AppCompatActivity {
                 } catch (Exception e){
                     e.printStackTrace();
                 }
-                runEnrollmentTask(PersistentDataBase.getUsers().get(4));
+                runEnrollmentTask(user);
 
                 mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
                 mProgressBar.setProgress(i);
@@ -148,6 +172,8 @@ public class VoiceActivity extends AppCompatActivity {
             public void onSuccess(File convertedFile) {
                 // So fast? Love it!
                 AudioRecordingUtils.setFilePathWAV();
+                SpeakerRecognitionUtils.userIn.setName(firstName+" "+lastName);
+                SpeakerRecognitionUtils.userIn.setLinkedInURL(userURL);
                 runAudioEnrollmentTask(AudioRecordingUtils.getFilePath());
             }
             @Override
@@ -221,7 +247,9 @@ public class VoiceActivity extends AppCompatActivity {
                     firstName = json.getString("firstName");
                     lastName = json.getString("lastName");
 
-                    PersistentDataBase.getUsers().set(4, new User(firstName + " " + lastName, userURL,5, null));
+
+                    //getUsers().set(4, new User(firstName + " " + lastName, userURL,5, null));
+                    getUsers();
 
                     Log.v("LinkedIn link", "userURL"+userURL);
                 }
@@ -264,4 +292,44 @@ public class VoiceActivity extends AppCompatActivity {
         boolean accessTokenValid = session.isValid();
     }
 
+    private void getUsers(){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    mUsers = new ArrayList<>();
+                    for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                        FireBaseUser user = snapshot.getValue(FireBaseUser.class);
+                        mUsers.add(user);
+                        if(user.getLinkedinUrl() == userURL)
+                        {
+                            startActivity(new Intent(VoiceActivity.this,StartRecordActivity.class));
+                            finish();
+                        }
+                    }
+                    Log.v("","");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    /*private void saveUserData(){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        FireBaseUser user = new FireBaseUser();
+        user.setId("test");
+        user.setFirstName("test");
+        user.setLastName("test");
+        user.setLinkedinUrl("test");
+
+        databaseReference.child("users").child("uid").setValue(user);
+    }*/
 }
