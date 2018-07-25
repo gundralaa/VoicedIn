@@ -9,6 +9,9 @@ import android.view.*;
 import android.widget.*;
 import java.io.*;
 import android.media.*;
+
+import com.example.android.voicedin.utils.SpeechToTextAPICall;
+
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
@@ -97,8 +100,7 @@ public class StartRecordActivity extends AppCompatActivity {
             recordingThread = null;
         }
         ((Button)view.findViewById(R.id.recordingButton)).setText("Start Recording");
-        ((EditText)findViewById(R.id.recordedTranscript)).setText("Woah it's a transcript"); //TODO: replace with method call to speech to text API
-        isRecording = false;
+        ((EditText)findViewById(R.id.recordedTranscript)).setText(SpeechToTextAPICall.speechWithFile("/sdcard/8k16bitMono.pcm")); //TODO: replace with method call to speech to text API
     }
 
     //Conversion of short to byte
