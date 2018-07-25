@@ -11,28 +11,32 @@ import java.util.UUID;
 public class DBManager {
 
     private ArrayList<String> userInfo;
-    SQLConnection sqlConnection = new SQLConnection();
+    SQLConnection sqlConnection;
     // config file name
 
+    public DBManager() {
+        sqlConnection = new SQLConnection();
+    }
+
     //creates unique UserId, should be called upon creating new account
-    public UUID generateUSERID(){
+    public String generateUSERID(){
         UUID userId = UUID.randomUUID();
-        return userId;
+        return userId.toString();
     }
 
     //retrieves last known location of user from db
     //for just lat, or just long, parse through array in method retrieveAllUserInfo
-    public String retrieveUserLocation(UUID UserId) throws Exception{
+    public String retrieveUserLocation(String UserId) throws Exception{
         return sqlConnection.retrieve_location(UserId);
     }
 
     //updates user location in db
-    public void updateUserLocation(UUID UserId, float Longitude, float Latitude) throws Exception{
+    public void updateUserLocation(String UserId, float Longitude, float Latitude) throws Exception{
         sqlConnection.update_location(Latitude, Longitude, UserId);
     }
 
     //retrieves voiceId from corresponding UserId
-    public String getVoiceFromUserId(UUID UserId) throws Exception {
+    public String getVoiceFromUserId(String UserId) throws Exception {
         return sqlConnection.get_voice_from_user(UserId);
     }
 
@@ -44,13 +48,13 @@ public class DBManager {
 
     //inserts new user into db
     //this method requires all variables but some of them can be null
-    public void createNewUser(UUID UserId, String Name, String LinkedInURL,
-                              UUID VoiceId, float Latitude, float Longitude) throws Exception{
+    public void createNewUser(String UserId, String Name, String LinkedInURL,
+                              String VoiceId, float Latitude, float Longitude) throws Exception{
         sqlConnection.populate_profile(UserId, Name, LinkedInURL, VoiceId, Latitude, Longitude);
     }
 
     //returns all values from db associated with a specific UserId
-    public ArrayList<String> retrieveAllUserInfo(UUID UserId) throws Exception{
+    public ArrayList<String> retrieveAllUserInfo(String UserId) throws Exception{
         return sqlConnection.retrieve_all_user_info(UserId);
         /*
         *0: name
@@ -59,5 +63,21 @@ public class DBManager {
         * 3: lat
         * 4: long
          */
+    }
+
+    public void updateName(String Name, String UserId) throws Exception{
+        sqlConnection.update_name(Name, UserId);
+    }
+
+    public void updateURL(String URL, String UserId) throws Exception{
+        sqlConnection.update_URL(URL, UserId);
+    }
+
+    public void updateLat(String lat, String UserId) throws Exception{
+        sqlConnection.update_latitude(lat, UserId);
+    }
+
+    public void updateLong(String lon, String UserId) throws Exception{
+        sqlConnection.update_longitude(lon, UserId);
     }
 }

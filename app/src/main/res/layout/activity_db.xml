@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.android.voicedin.DBActivity"
+    tools:layout_editor_absoluteY="81dp">
+
+    <TextView
+        android:id="@+id/UserId_TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="UserId :"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/Name_TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="62dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="36dp"
+        android:text="Name :"
+        app:layout_constraintEnd_toStartOf="@+id/UpdateName_Button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/UserId_TextView" />
+
+    <TextView
+        android:id="@+id/URL_TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="81dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="37dp"
+        android:text="URL :"
+        app:layout_constraintEnd_toStartOf="@+id/UpdateURL_Button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Name_TextView" />
+
+    <TextView
+        android:id="@+id/Lat_TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="22dp"
+        android:layout_marginEnd="68dp"
+        android:layout_marginStart="16dp"
+        android:text="Lat :"
+        app:layout_constraintBottom_toTopOf="@+id/Long_TextView"
+        app:layout_constraintEnd_toStartOf="@+id/UpdateLong_Button"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/Long_TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="37dp"
+        android:layout_marginStart="16dp"
+        android:text="Long :"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/NewUser_Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginStart="7dp"
+        android:text="New User"
+        app:layout_constraintBottom_toTopOf="@+id/UpdateName_Button"
+        app:layout_constraintStart_toStartOf="@+id/UpdateName_Button" />
+
+    <Button
+        android:id="@+id/UpdateName_Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="15dp"
+        android:text="Update Name"
+        app:layout_constraintEnd_toStartOf="@+id/Name_EditText"
+        app:layout_constraintStart_toEndOf="@+id/Name_TextView"
+        app:layout_constraintTop_toBottomOf="@+id/UserId_TextView" />
+
+    <Button
+        android:id="@+id/UpdateURL_Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="17dp"
+        android:layout_marginTop="7dp"
+        android:text="Update URL"
+        app:layout_constraintEnd_toStartOf="@+id/URL_EditText"
+        app:layout_constraintStart_toEndOf="@+id/URL_TextView"
+        app:layout_constraintTop_toBottomOf="@+id/UpdateName_Button" />
+
+    <Button
+        android:id="@+id/UpdateLat_Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:text="Update Latitude"
+        app:layout_constraintBottom_toTopOf="@+id/Long_EditText"
+        app:layout_constraintStart_toStartOf="@+id/UpdateLong_Button" />
+
+    <Button
+        android:id="@+id/UpdateLong_Button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="27dp"
+        android:text="Update Longitude"
+        app:layout_constraintBottom_toBottomOf="@+id/Long_EditText"
+        app:layout_constraintEnd_toStartOf="@+id/Lat_EditText"
+        app:layout_constraintStart_toEndOf="@+id/Lat_TextView"
+        app:layout_constraintTop_toBottomOf="@+id/UpdateLat_Button" />
+
+    <EditText
+        android:id="@+id/Name_EditText"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_marginBottom="28dp"
+        android:layout_marginEnd="13dp"
+        android:layout_marginTop="28dp"
+        android:ems="10"
+        android:inputType="textLongMessage"
+        app:layout_constraintBottom_toTopOf="@+id/URL_TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/UpdateName_Button"
+        app:layout_constraintTop_toBottomOf="@+id/NewUser_Button" />
+
+    <EditText
+        android:id="@+id/URL_EditText"
+        android:layout_width="0dp"
+        android:layout_height="43dp"
+        android:layout_marginBottom="61dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginTop="61dp"
+        android:ems="10"
+        android:inputType="textLongMessage"
+        app:layout_constraintBottom_toBottomOf="@+id/Lat_EditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/UpdateURL_Button"
+        app:layout_constraintTop_toTopOf="@+id/UpdateName_Button" />
+
+    <EditText
+        android:id="@+id/Lat_EditText"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:layout_marginBottom="66dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginTop="66dp"
+        android:ems="10"
+        android:inputType="textLongMessage"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/UpdateLong_Button"
+        app:layout_constraintTop_toTopOf="@+id/UpdateURL_Button" />
+
+    <EditText
+        android:id="@+id/Long_EditText"
+        android:layout_width="0dp"
+        android:layout_height="46dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:inputType="textLongMessage"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/Lat_EditText"
+        app:layout_constraintStart_toStartOf="@+id/Name_EditText"
+        app:layout_constraintTop_toBottomOf="@+id/Lat_TextView" />
+
+
+</android.support.constraint.ConstraintLayout>

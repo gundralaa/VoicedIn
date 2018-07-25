@@ -9,6 +9,12 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.UUID;
 
+// Use the JDBC driver
+import java.sql.*;
+import com.microsoft.sqlserver.jdbc.*;
+
+import javax.xml.transform.Result;
+
 public class SQLConnection {
 
     private String configFilename;
@@ -48,9 +54,36 @@ public class SQLConnection {
     private PreparedStatement retrieveUserIdFromVoiceIdStatement;
 
     private static final String INSERT_NEW_USER_SQL =
-            "INSERT INTO Users(UserId, Name, LinkedInUrl, VoiceId, LocationLatitude, LocationLongitude)" +
-                    "VALUES(?, ?, ?, ?, ?, ?);";
+            "INSERT INTO Users(Name, LinkedInUrl, VoiceId, LocationLatitude, LocationLongitude)" +
+                    "VALUES(?, ?, ?, ?, ?, ?) WHERE UserID = ?;";
     private PreparedStatement insertNewUserStatement;
+
+
+    private static final String UPDATE_NAME =
+            "UPDATE Users" +
+                    "SET Name = ?" +
+                    "WHERE UserId = ?;";
+    private PreparedStatement updateNameStatement;
+
+    private static final String UPDATE_LINKEDINURL =
+            "UPDATE Users" +
+                    "SET LinkedInURL = ?" +
+                    "WHERE UserId = ?;";
+    private PreparedStatement updateLinkedInURLStatement;
+
+    private static final String UPDATE_LATITUDE =
+            "UPDATE Users" +
+                    "SET LocationLatitude = ?" +
+                    "WHERE UserId = ?;";
+    private PreparedStatement updateLatitudeStatement;
+
+    private static final String UPDATE_LONGITUDE =
+            "UPDATE Users" +
+                    "SET LocationLatitude = ?" +
+                    "WHERE UserId = ?;";
+    private PreparedStatement updateLongitudeStatement;
+
+
 
     private static final String RETRIEVE_ALL_USER_INFO =
             "SELECT * FROM Users WHERE UserId = ?;";
@@ -70,7 +103,7 @@ public class SQLConnection {
 
     private static final String RETRIEVE_LONGITUDE_FROM_USERID =
             "SELECT LocationLongitude FROM Users WHERE UserId = ?;";
-    private PreparedStatement retrieveLongitdueStatement;
+    private PreparedStatement retrieveLongitudeStatement;
 
 
     //TRANSACTIONS
@@ -86,9 +119,42 @@ public class SQLConnection {
 
 
     //connect to SQL DB
-    public SQLConnection() {}
+    public SQLConnection() {
+        try {
+            ActualOpenConnection();
+            prepareStatements();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
-    public void openConnection() throws Exception {
+    public void ActualOpenConnection() {
+        String connectionString =
+                "jdbc:sqlserver://hack-sqlserver.database.windows.net:1433;"
+                        + "database=hackathon-db;"
+                        + "user=hackuser@hack-sqlserver;"
+                        + "password=microHack18;"
+                        + "encrypt=true;"
+                        + "trustServerCertificate=false;"
+                        + "hostNameInCertificate=*.database.windows.net;"
+                        + "loginTimeout=30;";
+
+        // Declare the JDBC objects.
+        this.connection = null;
+
+        try {
+            this.connection = DriverManager.getConnection(connectionString);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            if (connection != null) try { connection.close(); } catch(Exception e) {}
+        }
+    }
+
+    /* I think this might not actually work */
+    public void OldOpenConnection() throws Exception {
 
         jSQLDriver = "com.microsoft.sqlserver.jdbc.SWLServerDriver";
         jSQLUrl = "jdbc:sqlserver://hack-sqlserver.database.windows.net;database=hackathon-db";
@@ -96,11 +162,8 @@ public class SQLConnection {
         jSQLPassword = "microHack18";
 
         Class.forName(jSQLDriver).newInstance();
-
         connection = DriverManager.getConnection(jSQLUrl, jSQLUser, jSQLPassword);
-
         connection.setAutoCommit(true);
-
         connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
     }
 
@@ -115,10 +178,15 @@ public class SQLConnection {
         retrieveVoiceIdFromUserStatement = connection.prepareStatement(RETRIEVE_VOICEID_FROM_USERID_SQL);
         retrieveUserIdFromVoiceIdStatement = connection.prepareStatement(RETRIEVE_USERID_FROM_VOICE_SQL);
 
+        updateNameStatement = connection.prepareStatement(UPDATE_NAME);
+        updateLinkedInURLStatement = connection.prepareStatement(UPDATE_LINKEDINURL);
+        updateLatitudeStatement = connection.prepareStatement(UPDATE_LATITUDE);
+        updateLongitudeStatement = connection.prepareStatement(UPDATE_LONGITUDE);
+
         retrieveNameStatement = connection.prepareStatement(RETRIEVE_NAME_FROM_USERID);
         retrieveLinkedInURLStatement = connection.prepareStatement(RETRIEVE_LINKEDINURL_FROM_USERID);
         retrieveLatitudeStatement = connection.prepareStatement(RETRIEVE_LATITUDE_FROM_USERID);
-        retrieveLongitdueStatement = connection.prepareStatement(RETRIEVE_LONGITUDE_FROM_USERID);
+        retrieveLongitudeStatement = connection.prepareStatement(RETRIEVE_LONGITUDE_FROM_USERID);
 
 
         insertNewUserStatement = connection.prepareStatement(INSERT_NEW_USER_SQL);
@@ -150,27 +218,27 @@ public class SQLConnection {
 
 
     //DB Management Transactions
-    public String retrieve_location(UUID UserId) throws Exception {
+    public String retrieve_location(String UserId) throws Exception {
         retrieveLocationStatement.clearParameters();
-        retrieveLocationStatement.setString(1, UserId.toString());
-        retrieveLocationStatement.setString(2, UserId.toString());
+        retrieveLocationStatement.setString(1, UserId);
+        retrieveLocationStatement.setString(2, UserId);
 
         ResultSet locationResult = retrieveLocationStatement.executeQuery();
         return locationResult.toString();
     }
 
-    public void update_location(float Latitude, float Longitude, UUID UserId) throws Exception {
+    public void update_location(float Latitude, float Longitude, String UserId) throws Exception {
         updateLocationStatement.clearParameters();
         updateLocationStatement.setFloat(1, Latitude);
         updateLocationStatement.setFloat(2, Longitude);
-        updateLocationStatement.setString(3, UserId.toString());
+        updateLocationStatement.setString(3, UserId);
 
         ResultSet locationResult = updateLocationStatement.executeQuery();
     }
 
-    public String get_voice_from_user(UUID UserId) throws Exception {
+    public String get_voice_from_user(String UserId) throws Exception {
         retrieveVoiceIdFromUserStatement.clearParameters();
-        retrieveVoiceIdFromUserStatement.setString(1, UserId.toString());
+        retrieveVoiceIdFromUserStatement.setString(1, UserId);
 
         ResultSet voiceResult = retrieveVoiceIdFromUserStatement.executeQuery();
         return voiceResult.toString();
@@ -185,13 +253,13 @@ public class SQLConnection {
     }
 
     public void populate_profile
-            (UUID UserId, String Name, String LinkedInURL, UUID VoiceId,
+            (String UserId, String Name, String LinkedInURL, String VoiceId,
              float LocationLatitude, float LocationLongitude) throws Exception {
         insertNewUserStatement.clearParameters();
-        insertNewUserStatement.setString(1, UserId.toString());
+        insertNewUserStatement.setString(1, UserId);
         insertNewUserStatement.setString(2, Name);
         insertNewUserStatement.setString(3, LinkedInURL);
-        insertNewUserStatement.setString(4, VoiceId.toString());
+        insertNewUserStatement.setString(4, VoiceId);
         insertNewUserStatement.setFloat(5, LocationLatitude);
         insertNewUserStatement.setFloat(6, LocationLongitude);
 
@@ -199,27 +267,58 @@ public class SQLConnection {
 
     }
 
-    public ArrayList<String> retrieve_all_user_info(UUID UserId)throws Exception{
+    public void update_name(String Name, String UserId) throws Exception{
+        updateNameStatement.clearParameters();
+        updateNameStatement.setString(1, Name);
+        updateNameStatement.setString(2, UserId);
+
+        ResultSet nameResult = updateNameStatement.executeQuery();
+    }
+
+    public void update_URL(String URL, String UserId) throws Exception{
+        updateLinkedInURLStatement.clearParameters();
+        updateLinkedInURLStatement.setString(1, URL);
+        updateLinkedInURLStatement.setString(2, UserId);
+
+        ResultSet urlResult = updateLinkedInURLStatement.executeQuery();
+    }
+
+    public void update_latitude(String lat, String UserId) throws Exception{
+        updateLatitudeStatement.clearParameters();
+        updateLatitudeStatement.setString(1, lat);
+        updateLatitudeStatement.setString(2, UserId);
+
+        ResultSet latResult = updateLatitudeStatement.executeQuery();
+    }
+
+    public void update_longitude(String lon, String UserId) throws Exception{
+        updateLongitudeStatement.clearParameters();
+        updateLongitudeStatement.setString(1, lon);
+        updateLongitudeStatement.setString(2, UserId);
+    }
+
+
+    public ArrayList<String> retrieve_all_user_info(String UserId)throws Exception{
         retrieveNameStatement.clearParameters();
-        retrieveNameStatement.setString(1, UserId.toString());
+        retrieveNameStatement.setString(1, UserId);
 
         retrieveLinkedInURLStatement.clearParameters();
-        retrieveLinkedInURLStatement.setString(1, UserId.toString());
+        retrieveLinkedInURLStatement.setString(1, UserId);
 
         retrieveVoiceIdFromUserStatement.clearParameters();
-        retrieveVoiceIdFromUserStatement.setString(1, UserId.toString());
+        retrieveVoiceIdFromUserStatement.setString(1, UserId);
 
         retrieveLatitudeStatement.clearParameters();
-        retrieveLatitudeStatement.setString(1, UserId.toString());
+        retrieveLatitudeStatement.setString(1, UserId);
 
-        retrieveLongitdueStatement.clearParameters();
-        retrieveLongitdueStatement.setString(1, UserId.toString());
+        retrieveLongitudeStatement.clearParameters();
+        retrieveLongitudeStatement.setString(1, UserId);
 
         ResultSet nameResult = retrieveNameStatement.executeQuery();
         ResultSet urlResult = retrieveLinkedInURLStatement.executeQuery();
         ResultSet voiceResult = retrieveVoiceIdFromUserStatement.executeQuery();
         ResultSet latResult = retrieveLatitudeStatement.executeQuery();
-        ResultSet longResult = retrieveLongitdueStatement.executeQuery();
+        ResultSet longResult = retrieveLongitudeStatement.executeQuery();
 
         userInfo.add(nameResult.toString());
         userInfo.add(urlResult.toString());
@@ -235,5 +334,7 @@ public class SQLConnection {
 
         //ResultSet userResult = retrieveAllUserInfoStatement.executeQuery();
     }
+
+
 
 }
