@@ -31,6 +31,7 @@ import static android.support.v4.content.ContextCompat.startActivity;
 public class SpeechToTextUtils {
     private static String speechSubscriptionKey = "7641b5bb27724a35b0f143df03e2ad5c";
     private static String serviceRegion = "westus";
+    public static String url = "";
 
     public static void speechCollect(TextView viewTxt){
         try{
@@ -139,6 +140,7 @@ public class SpeechToTextUtils {
                         }
                         Intent endStart = new Intent(activity, EndActivity.class);
                         endStart.putExtra("Transcript", transcript);
+                        endStart.putExtra("Url", url);
                         startActivity(activity,endStart, new Bundle());
 
                         continuousListeningStarted = false;

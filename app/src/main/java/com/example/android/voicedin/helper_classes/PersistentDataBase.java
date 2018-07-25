@@ -10,6 +10,7 @@ import java.util.UUID;
  */
 
 public class PersistentDataBase {
+    /*
 
     private static ArrayList<User> users = new ArrayList<>();
     private static ArrayList<UUID> ids = new ArrayList<>();
@@ -32,6 +33,8 @@ public class PersistentDataBase {
     public static ArrayList<UUID> getIds() {
         return ids;
     }
+
+    */
 
 
 }

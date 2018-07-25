@@ -15,6 +15,8 @@ public class EndActivity extends AppCompatActivity {
     private static String transcript;
     private static String conversationAnalysis = "";
     private static TextView name;
+    private static TextView urlView;
+    private static String url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,8 +27,12 @@ public class EndActivity extends AppCompatActivity {
 
         ((TextView)findViewById(R.id.name)).setText(name.getText());
         transcript = startAct.getStringExtra("Transcript");
-        ((TextView)findViewById(R.id.transcript)).setText(transcript);
+        url = startAct.getStringExtra("Url");
 
+        ((TextView)findViewById(R.id.transcript)).setText(transcript);
+        urlView = findViewById(R.id.linkedInURL);
+
+        urlView.setText(url);
         SentimentAnalysisResult sentimentResult = new SentimentAnalysisResult(transcript);
         sentimentResult.runSentimentAnalysis();
         KeyPhrasesAnalysisResult keyphraseResult = new KeyPhrasesAnalysisResult(transcript);

@@ -41,7 +41,6 @@ import cafe.adriel.androidaudioconverter.model.AudioFormat;
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static com.example.android.voicedin.StartRecordActivity.RequestPermissionCode;
-import static com.example.android.voicedin.helper_classes.PersistentDataBase.getUsers;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -99,7 +98,7 @@ public class VoiceActivity extends AppCompatActivity {
         //getUsers().add(new User("","", 5, null));
 
         requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, RECORD_AUDIO}, permission);
-        SpeakerRecognitionUtils.setUserId(userId);
+        //SpeakerRecognitionUtils.setUserId(userId);
 
 
         //handleLogin();
@@ -116,7 +115,7 @@ public class VoiceActivity extends AppCompatActivity {
             }
         });
 
-        User user = new User( firstName+" "+lastName,userURL,null, null);
+        User user = new User( firstName+" "+lastName, userURL,null, null);
 
         SpeakerRecognitionUtils.setView(textView);
         AudioRecordingUtils.setRecordingButton(recordButton);
@@ -303,7 +302,7 @@ public class VoiceActivity extends AppCompatActivity {
                     for(DataSnapshot snapshot: dataSnapshot.getChildren()){
                         FireBaseUser user = snapshot.getValue(FireBaseUser.class);
                         mUsers.add(user);
-                        if(user.getLinkedinUrl() == userURL)
+                        if(user.getLinkedinUrl().equals(userURL))
                         {
                             startActivity(new Intent(VoiceActivity.this,StartRecordActivity.class));
                             finish();

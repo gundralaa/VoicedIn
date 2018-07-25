@@ -13,7 +13,6 @@ import com.example.android.voicedin.EndActivity;
 import com.example.android.voicedin.Location;
 import com.example.android.voicedin.User;
 
-import com.example.android.voicedin.helper_classes.PersistentDataBase;
 
 import com.example.android.voicedin.FireBaseUser;
 import com.example.android.voicedin.Location;
@@ -56,7 +55,9 @@ public class SpeakerRecognitionUtils {
     private AudioRecord recorder;
     public static User userIn = null;
 
-    private static ArrayList<User> users = new ArrayList<>();
+    //private static ArrayList<User> users = new ArrayList<>();
+    private static ArrayList<FireBaseUser> users = new ArrayList<>();
+
     private static ArrayList<UUID> ids = new ArrayList<>();
 
 
@@ -83,9 +84,10 @@ public class SpeakerRecognitionUtils {
         }
     }*/
 
-    public static void initializeUsers(List<FireBaseUser> users)
+    public static void initializeUsers(ArrayList<FireBaseUser> incomingUsers)
     {
-        for(FireBaseUser user:users){
+        users = incomingUsers;
+        for(FireBaseUser user:incomingUsers){
             ids.add(UUID.fromString(user.getId()));
         }
     }
@@ -126,7 +128,6 @@ public class SpeakerRecognitionUtils {
             Log.d(TAG, user.getVoiceID() + "");
             userIn = user;
             userId = user.getVoiceID();
-            PersistentDataBase.getUsers().set(4, user);
         }
 
     }
@@ -180,7 +181,7 @@ public class SpeakerRecognitionUtils {
             OperationLocation statusUrl = null;
             try{
                 FileInputStream in = new FileInputStream(strings[0]);
-                statusUrl = client.identify(in, (List<UUID>) PersistentDataBase.getIds(),true);
+                statusUrl = client.identify(in, (List<UUID>)ids,true);
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -226,9 +227,10 @@ public class SpeakerRecognitionUtils {
         @Override
         protected void onPostExecute(UUID id) {
             super.onPostExecute(id);
-            int i = PersistentDataBase.getIds().indexOf(id);
-            Log.d(TAG, "Name of User: " + PersistentDataBase.getUsers().get(i).getName() );
-            nameView.setText(PersistentDataBase.getUsers().get(i).getName());
+            int i = ids.indexOf(id);
+            Log.d(TAG, "Name of User: " + users.get(i).getName() );
+            nameView.setText(users.get(i).getName());
+            SpeechToTextUtils.url = users.get(i).getLinkedinUrl();
 
         }
     }

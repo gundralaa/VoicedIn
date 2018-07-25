@@ -70,7 +70,7 @@ public class StartRecordActivity extends AppCompatActivity {
     ImageView recordButton;
     TextView nameView;
     StartRecordActivity context = this;
-    List<FireBaseUser> mUsers;
+    ArrayList<FireBaseUser> mUsers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
