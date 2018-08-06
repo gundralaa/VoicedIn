@@ -38,20 +38,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/name" />
 
+
     <TextView
         android:id="@+id/transcript"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="337dp"
+        android:layout_height="160dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:ems="10"
         android:inputType="textCapSentences|textMultiLine"
+        android:scrollbars="vertical"
         android:singleLine="false"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.533"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/transcriptHeader" />
 
@@ -73,31 +75,31 @@
 
     <TextView
         android:id="@+id/conversationAnalysis"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="337dp"
+        android:layout_height="62dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="28dp"
         android:ems="10"
         android:inputType="textCapSentences|textMultiLine"
+        android:scrollbars = "vertical"
         android:singleLine="false"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.533"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/conversationAnalysisHeader" />
 
     <TextView
         android:id="@+id/linkedInURL"
-        android:autoLink="web"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:textAlignment="center"
+        android:autoLink="web"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"

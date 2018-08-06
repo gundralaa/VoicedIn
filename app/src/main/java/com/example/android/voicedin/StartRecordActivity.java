@@ -18,6 +18,7 @@ import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -80,6 +81,8 @@ public class StartRecordActivity extends AppCompatActivity {
         speechView = (TextView) findViewById(R.id.speech_text_view);
         recordButton = (ImageView) findViewById(R.id.recordButton);
         nameView = (TextView) findViewById(R.id.textView2);
+
+        speechView.setMovementMethod(new ScrollingMovementMethod());
 
         //SpeakerRecognitionUtils.initializeUsers();
         getUsers();

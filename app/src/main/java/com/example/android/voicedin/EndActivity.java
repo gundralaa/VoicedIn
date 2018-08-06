@@ -30,6 +30,7 @@ public class EndActivity extends AppCompatActivity {
         url = startAct.getStringExtra("Url");
 
         ((TextView)findViewById(R.id.transcript)).setText(transcript);
+        ((TextView)findViewById(R.id.transcript)).setMovementMethod(new ScrollingMovementMethod());
         urlView = findViewById(R.id.linkedInURL);
 
         urlView.setText(url);
@@ -47,7 +48,9 @@ public class EndActivity extends AppCompatActivity {
 
         conversationAnalysis += "Sentiment Analysis: " + (Double.parseDouble(sentimentResult.SentimentScore) * 100) + "% positive\n\n";
         conversationAnalysis += "Keywords: " + keyphraseResult.KeyPhrasesArrayAsString;
+
         ((TextView)findViewById(R.id.conversationAnalysis)).setText(conversationAnalysis);
+        ((TextView)findViewById(R.id.conversationAnalysis)).setMovementMethod(new ScrollingMovementMethod());
     }
 
     public static void setNameView(TextView nameView) {
